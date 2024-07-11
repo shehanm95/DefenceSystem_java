@@ -10,7 +10,7 @@ import java.awt.Graphics;
 
 public class BackgroundAdder {
     /*seContentPane(panel) */
-    public static void addBackground(JFrame frame ,ImageIcon imageIcon){
+    public static void addBackground(JFrame frame ,ImageIcon imageIcon , int width , int height){
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -23,7 +23,7 @@ public class BackgroundAdder {
         
         // Set the custom panel as the content pane
         frame.setContentPane(panel);
-        frame.setSize(new Dimension(499, 400));
+        frame.setSize(new Dimension(width,height));
         System.out.println("image width : " + imageIcon.getIconWidth());
         frame.setResizable(false);
     }

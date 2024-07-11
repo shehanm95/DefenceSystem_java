@@ -12,6 +12,8 @@ public class MainController extends JFrame {
     JSlider YSlider = new JSlider(JSlider.VERTICAL,0 , 100,20);
 
     RotatingImagePanel radarRotator = new RotatingImagePanel("images/RadarRotator.png");
+
+        DefenseMap map = new DefenseMap();
         
     
 
@@ -39,17 +41,17 @@ public class MainController extends JFrame {
     JLabel messageFrom = new JustifiedLabel("No Received Messages",100);
     JLabel messageBody = new JustifiedLabel("Message Body will Display here.",94);
 
+
+
     
     private static MainController mainController = null;
 
     private MainController(){
-        BackgroundAdder.addBackground(this,new ImageIcon("images/backGround.png"));
+        BackgroundAdder.addBackground(this,new ImageIcon("images/backGround.png"),978, 588);
         // Create a custom panel with overridden paintComponent method
-       
         // Frame settings
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); 
-        setSize(978, 588);
         initComponents();
         setResizable(false);
         setVisible(true);
@@ -72,6 +74,9 @@ public class MainController extends JFrame {
         getContentPane().add(YSlider);
         YSlider.setOpaque(false);
         YSlider.setBounds(30,110,40,323);
+
+        getContentPane().add(map);
+        map.setBounds(82,116, 394, 312);
 
 
         //Scan Area

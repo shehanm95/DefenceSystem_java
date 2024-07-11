@@ -1,6 +1,5 @@
 package support;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
@@ -11,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputListener;
 
 import Main.DefenseSystem;
+import Main.UnitWindow;
 
 public class SelectionButton extends BackgroundPanel implements MouseInputListener {
     private UnitWindow unitWindow;
