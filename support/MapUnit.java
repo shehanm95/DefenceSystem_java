@@ -1,26 +1,29 @@
 package support;
 
-import java.awt.Color;
+import java.awt.Image;
 import java.util.LinkedList;
 import java.util.Queue;
-
 import javax.swing.ImageIcon;
 
 public class MapUnit {
     int x, y;
     ImageIcon icon;
     Queue<Position> positions = new LinkedList<>();
+    int speed = 80;
+    int steps = 80;
 
     public MapUnit(int x, int y, ImageIcon icon) {
         this.x = x;
         this.y = y;
         this.icon = icon;
+       
+    }
+    public MapUnit(Position position, ImageIcon icon) {
+        this.x = position.getX();
+        this.y = position.getY();
+        this.icon = icon;
 
         
-        
-        for (Position position : positions) {
-            System.out.println(position.getX());
-        }
     }
 
     public void updatePosition(){
@@ -30,20 +33,40 @@ public class MapUnit {
             this.y = pos.getY();
         }
     }
-
+    
+  
 
     public void movePosition(Position newPosition){
         positions.clear();
-        float Dy =  Math.abs(( (this.y - newPosition.getY()))/20);
-        float Dx = Math.abs((this.x - newPosition.getX())/20);
-        if(this.y > newPosition.getY()){ Dy = Dy* -1;}
-        if(this.x > newPosition.getX()){Dx*=-1;}
+        //positions.add(this.getPosition());
+        int distance = calculateDistance(newPosition);
+        steps = calculateSteps(distance);
+        System.out.println("final Position : " + newPosition);
+        if(Math.round(steps) ==0)steps = 1;
+        float Dy =  Math.abs(( (this.y - newPosition.getY()))/steps);
+        float Dx = Math.abs((this.x - newPosition.getX())/steps);
+        if(this.y > newPosition.getY()){ Dy = -Dy;}
+        if(this.x > newPosition.getX()){Dx= -Dx;}
 
-        for (int i = 0; i < 20; i++) {
-            positions.add(new Position((int) (this.x + (Dx* (i+1))),(int) (this.y + (Dy* (i+1)))));
+        for (int i = 0; i < steps; i++) {
+            positions.add(new Position( (int) (this.x + (Dx* (i+1))), (int) (this.y + (Dy* (i+1)))));
         }
         positions.add(new Position(newPosition.getX(),newPosition.getY()));
     }
+
+    private int calculateSteps(int distance) {
+        //System.out.println("row steps : " + (distance/(394/steps)));
+
+        float div = (394/speed);
+        if(Math.round(div) == 0){
+            div = 1;
+        }
+        float tempSteps =  (distance/div); 
+        if(Math.round(tempSteps) == 0){
+            tempSteps = 1;
+        }
+
+        return (int)tempSteps ;}
 
     public int getIconWidth() {
         return icon.getIconWidth();
@@ -52,4 +75,37 @@ public class MapUnit {
     public int getIconHeight() {
         return icon.getIconHeight();
     }
+
+
+    public int calculateDistance(Position position){
+        float xDistance = Math.abs(this.x - position.getX());
+        float yDistance = Math.abs(this.y - position.getY());
+        
+        double distance = Math.sqrt((yDistance*yDistance) + (xDistance*xDistance));
+       // System.out.println("Distance : " + distance);
+        return (int) distance;
+
+    }
+
+    public void setPosition(Position position){
+        positions.clear();
+        this.x = position.getX();
+        this.y = position.getY();
+        positions.add(position);
+    }
+
+    public boolean checkPositionEquality(Position unit){
+        if(this.x == unit.getX() && this.y == unit.getY()) return true;
+        return false;
+    }
+
+    public Position getPosition(){
+        return new Position(this.x, this.y);
+    }
+    public Image getImage() {return icon.getImage();}
+    public int getX() {return this.x;}
+    public int getY() {return this.y;}
+
+    
+
 }

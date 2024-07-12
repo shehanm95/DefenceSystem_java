@@ -1,44 +1,43 @@
 package support;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Stack;
 
 import javax.swing.JPanel;
 
-import javax.swing.ImageIcon;
+import intefaces.MapMoveable;
 
 public class DefenseMap extends JPanel implements Runnable {
     private Thread mapThread;
-    Stack<MapUnit> units = new Stack<>();
-    public DefenseMap() {
+    Stack<MapMoveable> units = new Stack<>();
+    
+    private static DefenseMap map = null;
+    private DefenseMap() {
         mapThread = new Thread(this);
         mapThread.start();
-        units.add(new MapUnit(20, 23, new ImageIcon("./images/unit.png")));
-
-        for (MapUnit mapUnit : units) {
-            mapUnit.movePosition(new Position(200, 200));
-        }
+        setOpaque(false);
+        
+       
+    }
+    public static DefenseMap getDefenseMap(){
+        if(map == null) map = new DefenseMap();
+        return map;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        for (MapUnit mapUnit : units){
+        for (MapMoveable mapUnit : units){
             int size =(int) (mapUnit.getIconHeight()/4)+1;
-            g.drawImage(mapUnit.icon.getImage(), mapUnit.x, mapUnit.y, size,size , this);
-           
+            g.drawImage(mapUnit.getImage(), mapUnit.getX(), mapUnit.getY(), size,size , this);
         }
-        
-
-        
     }
 
     @Override
     public void run() {
         while (true) {
-            for (MapUnit mapUnit : units) {
+            for (MapMoveable mapUnit : units) {
                 mapUnit.updatePosition();
                // System.out.println(mapUnit.x + " "+ mapUnit.y);
             }
@@ -52,8 +51,11 @@ public class DefenseMap extends JPanel implements Runnable {
     }
 
 
-    public void addUnitsToMap(){
-        //do necessary changes to the class and implement the method effectively
+    public void addUnitsToMap(MapUnit unit){
+        units.add((MapMoveable) unit);
+    }
+    public void addUnitsToMap(EnemyMapUnit unit){
+        units.add(unit);
     }
     public void removeUnitsFromMap(){
         //do necessary changes to the class and implement the method effectively

@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputListener;
 
 import Main.DefenseSystem;
+import Main.MainController;
 import Main.UnitWindow;
 
 public class SelectionButton extends BackgroundPanel implements MouseInputListener {
@@ -20,14 +21,19 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
 
     private ProgressBar energyBar;
     private ProgressBar strengthBar;
+    private GreenUnit greenUnit = null;
+    Unit type = null;
+    MainController mainController = MainController.getMainController();
     
     public SelectionButton(Unit type){
         super(new ImageIcon("./images/SelectionButton.png"), new Dimension(88,98));
+        this.type = type;
         setBorder(new EmptyBorder(0, 0, 0, 0));
         unitWindow =new UnitWindow(Unit.Helicopter);
         unitWindow.setTitle(type.toString());
         initComponents(type);
         addMouseListener(this);
+        mainController.setUnit( getGreenUnit());
         
         
     }
@@ -66,6 +72,19 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         energyBar.changeValue(health);
         health -=20;
         System.out.println(health);
+        mainController.setUnit( getGreenUnit());
+         
+    }
+
+    public GreenUnit getGreenUnit(){
+        if(greenUnit == null){
+            ImageIcon image = new ImageIcon("./images/unit.png");
+            if(type == Unit.Helicopter)  greenUnit = new GreenUnit(227, 260, image);
+            if(type == Unit.Tank)  greenUnit = new GreenUnit(88, 272, image);
+            if(type == Unit.Helicopter)  greenUnit = new GreenUnit(273, 185, image);
+            DefenseMap.getDefenseMap().addUnitsToMap(greenUnit);
+        }
+        return greenUnit;
     }
 
     @Override

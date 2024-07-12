@@ -1,19 +1,22 @@
 package Main;
 import javax.swing.*;
+
+import org.w3c.dom.events.MouseEvent;
+
+import intefaces.MapMoveable;
 import support.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
 
 public class MainController extends JFrame {
     
     
-    JSlider XSlider = new JSlider(JSlider.HORIZONTAL,0 , 100,20);
-    JSlider YSlider = new JSlider(JSlider.VERTICAL,0 , 100,20);
+    JSlider XSlider = new JSlider(JSlider.HORIZONTAL,0 , 380,20);
+    JSlider YSlider = new JSlider(JSlider.VERTICAL,0 , 292,20);
 
     RotatingImagePanel radarRotator = new RotatingImagePanel("images/RadarRotator.png");
 
-        DefenseMap map = new DefenseMap();
+    DefenseMap map = DefenseMap.getDefenseMap();
         
     
 
@@ -41,8 +44,7 @@ public class MainController extends JFrame {
     JLabel messageFrom = new JustifiedLabel("No Received Messages",100);
     JLabel messageBody = new JustifiedLabel("Message Body will Display here.",94);
 
-
-
+    private GreenUnit unit;
     
     private static MainController mainController = null;
 
@@ -55,6 +57,7 @@ public class MainController extends JFrame {
         initComponents();
         setResizable(false);
         setVisible(true);
+        EnemyInstantiateObj.getEnemyInstantiate();
     }
 
 
@@ -69,15 +72,15 @@ public class MainController extends JFrame {
         //Sliders
         getContentPane().add(XSlider);
         XSlider.setOpaque(false);
-        XSlider.setBounds(78,79,407,20);
-        
+        XSlider.setBounds(88,79,380,20);
+
         getContentPane().add(YSlider);
         YSlider.setOpaque(false);
-        YSlider.setBounds(30,110,40,323);
+        YSlider.setBounds(30,122,40,302);
 
         getContentPane().add(map);
-        map.setBounds(82,116, 394, 312);
-
+        map.setBounds(88,122, 380, 302);
+        
 
         //Scan Area
         getContentPane().add(scanAreaButton);
@@ -134,10 +137,7 @@ public class MainController extends JFrame {
         receivedMessagePanel.setLayout(null);
         messageFrom.setFont(new Font("",1,14));
         messageBody.setFont(new Font("",1,12));
-        //messageFrom.setPreferredSize(new Dimension(20, 20));
-       // messageBody.setPreferredSize(new Dimension(50, 20));
-
-
+        
         
         messageFrom.setForeground(DefenseSystem.PrimaryfontColor);
         messageBody.setForeground(DefenseSystem.PrimaryfontColor);
@@ -154,6 +154,14 @@ public class MainController extends JFrame {
         radarRotator.setBounds(145, 137, 267, 267);
     }
 
+    public GreenUnit getUnit() {
+        return unit;
+    }
+
+
+    public void setUnit(GreenUnit unit) {
+        this.unit = unit;
+    }
     void scanArea(){
         areaClearedStatus.setBackgroundImage(new ImageIcon("images/clearStatus-Detected.png"));
         System.out.println("area Scanned");
@@ -175,6 +183,8 @@ public class MainController extends JFrame {
         System.out.println("deploySub");
     }
     void callBack(){
+        int yValue = YSlider.getMaximum() - YSlider.getValue();
+        if(this.unit != null)unit.movePosition(new Position(XSlider.getValue(), yValue));
         System.out.println("call back all to the bases");
     }
     void sendMessageAll(){
