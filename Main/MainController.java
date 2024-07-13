@@ -1,22 +1,21 @@
 package Main;
 import javax.swing.*;
 
-import org.w3c.dom.events.MouseEvent;
-
-import intefaces.MapMoveable;
+import enums.GreenUnitType;
 import support.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 
 public class MainController extends JFrame {
     
+    JButton setPositionButton = new ImageButton("images/setPositionButton.png",43,31);
+    ImageButton shehanButton = new ImageButton("images/shehanButton.png",0);
     
     JSlider XSlider = new JSlider(JSlider.HORIZONTAL,0 , 380,20);
     JSlider YSlider = new JSlider(JSlider.VERTICAL,0 , 292,20);
 
+    DefenseMap map = DefenseMap.getDefenseMap();
     RotatingImagePanel radarRotator = new RotatingImagePanel("images/RadarRotator.png");
 
-    DefenseMap map = DefenseMap.getDefenseMap();
         
     
 
@@ -70,6 +69,17 @@ public class MainController extends JFrame {
         setLayout(null);
 
         //Sliders
+
+        getContentPane().add(setPositionButton);
+        setPositionButton.setOpaque(false);
+        setPositionButton.setBounds(21,71,53,40);
+        setPositionButton.addActionListener((e)->setPosition());
+
+        getContentPane().add(shehanButton);
+        shehanButton.setOpaque(false);
+        shehanButton.setBounds(624,13,shehanButton.getButtonWidth(), shehanButton.getButtonHeight());
+
+
         getContentPane().add(XSlider);
         XSlider.setOpaque(false);
         XSlider.setBounds(88,79,380,20);
@@ -171,7 +181,7 @@ public class MainController extends JFrame {
     }
     void deployHeli(){
         System.out.println("deployHeli");
-        SelectionButton heli = new SelectionButton(Unit.Helicopter);
+        SelectionButton heli = new SelectionButton(GreenUnitType.AirForce);
         selectionButtonPanel.add(heli); 
         selectionButtonPanel.revalidate();
         selectionButtonPanel.repaint();
@@ -191,6 +201,12 @@ public class MainController extends JFrame {
         messageFrom.setText("Tank 01");
         messageBody.setText("send troops to the west, we are ready to attack");
         System.out.println("send message to all units ");
+    }
+
+    void setPosition(){
+        int yValue = YSlider.getMaximum() - YSlider.getValue();
+        if(this.unit != null)unit.movePosition(new Position(XSlider.getValue(), yValue));
+        System.out.println("call back all to the bases");
     }
 
 

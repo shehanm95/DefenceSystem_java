@@ -12,6 +12,7 @@ import javax.swing.event.MouseInputListener;
 import Main.DefenseSystem;
 import Main.MainController;
 import Main.UnitWindow;
+import enums.GreenUnitType;
 
 public class SelectionButton extends BackgroundPanel implements MouseInputListener {
     private UnitWindow unitWindow;
@@ -22,23 +23,27 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     private ProgressBar energyBar;
     private ProgressBar strengthBar;
     private GreenUnit greenUnit = null;
-    Unit type = null;
+    GreenUnitType type = null;
     MainController mainController = MainController.getMainController();
+    private DefenseMap map = DefenseMap.getDefenseMap();
     
-    public SelectionButton(Unit type){
+    
+    public SelectionButton(GreenUnitType type){
         super(new ImageIcon("./images/SelectionButton.png"), new Dimension(88,98));
         this.type = type;
         setBorder(new EmptyBorder(0, 0, 0, 0));
-        unitWindow =new UnitWindow(Unit.Helicopter);
+        unitWindow =new UnitWindow(GreenUnitType.AirForce);
         unitWindow.setTitle(type.toString());
         initComponents(type);
         addMouseListener(this);
-        mainController.setUnit( getGreenUnit());
+        greenUnit = getGreenUnit();
+        mainController.setUnit( greenUnit);
+        map.setGreenSelectorPosition(greenUnit);
         
         
     }
 
-    void initComponents(Unit type){
+    void initComponents(GreenUnitType type){
         setLayout(null);
 
         ImageIcon img = new ImageIcon("./images/"+type.toString()+".png");
@@ -72,16 +77,18 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         energyBar.changeValue(health);
         health -=20;
         System.out.println(health);
-        mainController.setUnit( getGreenUnit());
+        greenUnit = getGreenUnit();
+        mainController.setUnit(greenUnit );
+        map.setGreenSelectorPosition(greenUnit);
          
     }
 
     public GreenUnit getGreenUnit(){
         if(greenUnit == null){
             ImageIcon image = new ImageIcon("./images/unit.png");
-            if(type == Unit.Helicopter)  greenUnit = new GreenUnit(227, 260, image);
-            if(type == Unit.Tank)  greenUnit = new GreenUnit(88, 272, image);
-            if(type == Unit.Helicopter)  greenUnit = new GreenUnit(273, 185, image);
+            if(type == GreenUnitType.Navy)  greenUnit = new GreenUnit(DefenseSystem.NavyBasePosition, image,GreenUnitType.Navy);
+            if(type == GreenUnitType.Army)  greenUnit = new GreenUnit(DefenseSystem.ArmyBasePosition, image,GreenUnitType.Army);
+            if(type == GreenUnitType.AirForce)  greenUnit = new GreenUnit(DefenseSystem.AirForceBasePosition, image,GreenUnitType.AirForce);
             DefenseMap.getDefenseMap().addUnitsToMap(greenUnit);
         }
         return greenUnit;

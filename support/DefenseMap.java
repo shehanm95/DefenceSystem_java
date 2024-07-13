@@ -10,15 +10,31 @@ import intefaces.MapMoveable;
 public class DefenseMap extends JPanel implements Runnable {
     private Thread mapThread;
     Stack<MapMoveable> units = new Stack<>();
+    GreenSelectorInMap unitSelector;
+    GreenUnit selectedGreenUnit;
     
     private static DefenseMap map = null;
     private DefenseMap() {
         mapThread = new Thread(this);
         mapThread.start();
         setOpaque(false);
-        
-       
+        unitSelector = new GreenSelectorInMap();
+        initSelectors();
     }
+
+    private void initSelectors(){
+        this.setLayout(null);
+        unitSelector.setOpaque(false);
+        unitSelector.setBounds(-100, -100, 24, 24);
+        add(unitSelector);
+    }
+
+    public void setGreenSelectorPosition(GreenUnit greenUnit){
+        selectedGreenUnit = greenUnit;
+    }
+
+
+
     public static DefenseMap getDefenseMap(){
         if(map == null) map = new DefenseMap();
         return map;
@@ -41,6 +57,7 @@ public class DefenseMap extends JPanel implements Runnable {
                 mapUnit.updatePosition();
                // System.out.println(mapUnit.x + " "+ mapUnit.y);
             }
+            if(selectedGreenUnit != null){unitSelector.setBounds(selectedGreenUnit.getX()-7,selectedGreenUnit.getY()-8, 24, 24);}
             repaint();
             try {
                 Thread.sleep(1000); // Adjust the sleep time to control the update rate

@@ -39,9 +39,6 @@ public class EnemyInstantiateObj implements Runnable {
 
     private EnemyMapUnit getNewEnemy() {
         EnemyMapUnit enemy = new EnemyMapUnit();
-        Position pos = enemy.setInitialPosition();
-        enemy.setPosition(pos);
-        enemy.movePosition(enemy.getMidPosition());
         return enemy;
         
     }

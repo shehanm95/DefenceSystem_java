@@ -2,6 +2,8 @@ package intefaces;
 
 import java.awt.Image;
 
+import support.Position;
+
 public interface MapMoveable {
     
     public void updatePosition();
@@ -9,4 +11,5 @@ public interface MapMoveable {
     public Image getImage();
     public int getX();
     public int getY();
+    public Position setInitialPosition ();
 }

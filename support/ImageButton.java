@@ -3,8 +3,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ImageButton extends JButton {
+    private ImageIcon buttonIcon;
     public ImageButton(String BImageFileName){
-        ImageIcon buttonIcon = new ImageIcon(BImageFileName);
+        buttonIcon = new ImageIcon(BImageFileName);
         this.setIcon(buttonIcon);
         this.setPreferredSize(new Dimension(234, 20));
         this.setBackground(null);
@@ -14,7 +15,7 @@ public class ImageButton extends JButton {
         this.setOpaque(false);
     }
     public ImageButton(String BImageFileName, int autoHeight_PassAnyValue){
-        ImageIcon buttonIcon = new ImageIcon(BImageFileName);
+        buttonIcon = new ImageIcon(BImageFileName);
         this.setIcon(buttonIcon);
         this.setPreferredSize(new Dimension(buttonIcon.getIconWidth(), buttonIcon.getIconHeight()));
         this.setBackground(null);
@@ -24,7 +25,7 @@ public class ImageButton extends JButton {
         this.setOpaque(false);
     }
     public ImageButton(String BImageFileName, int width, int height){
-        ImageIcon buttonIcon = new ImageIcon(BImageFileName);
+        buttonIcon = new ImageIcon(BImageFileName);
         this.setIcon(buttonIcon);
         this.setPreferredSize(new Dimension(width  , height));
         this.setBackground(null);
@@ -55,10 +56,21 @@ public class ImageButton extends JButton {
     public void updateUI() {
         super.updateUI();
         // Ensure that the look and feel changes don't affect our custom settings
-        setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        //setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setRolloverEnabled(false);
         setContentAreaFilled(false);
         setFocusPainted(false);
         setOpaque(false);
     }
+    public int getButtonHeight() {
+        return buttonIcon.getIconHeight();
+    }
+    public int getButtonWidth() {
+        return buttonIcon.getIconWidth();
+    }
+    public ImageIcon getButtonIcon() {
+        return buttonIcon;
+    }
+
+    
 }
