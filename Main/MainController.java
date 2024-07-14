@@ -44,7 +44,7 @@ public class MainController extends JFrame {
     JLabel messageFrom = new JustifiedLabel("No Received Messages",100);
     JLabel messageBody = new JustifiedLabel("Message Body will Display here.",94);
 
-    private GreenUnit unit;
+    private GreenUnit mapUnit;
     
     private static MainController mainController = null;
 
@@ -165,13 +165,13 @@ public class MainController extends JFrame {
         radarRotator.setBounds(145, 137, 267, 267);
     }
 
-    public GreenUnit getUnit() {
-        return unit;
+    public GreenUnit getMapUnit() {
+        return mapUnit;
     }
 
 
-    public void setUnit(GreenUnit unit) {
-        this.unit = unit;
+    public void setMapUnit(GreenUnit unit) {
+        this.mapUnit = unit;
     }
     void scanArea(){
         areaClearedStatus.setBackgroundImage(new ImageIcon("images/clearStatus-Detected.png"));
@@ -196,22 +196,24 @@ public class MainController extends JFrame {
     }
     void deploySub(){
         System.out.println("deploySub");
+        SelectionButton sub = new SelectionButton(GreenUnitType.Submarine , String.format(" %02d", ++tankNum));
+        selectionButtonPanel.add(sub); 
+        selectionButtonPanel.revalidate();
+        selectionButtonPanel.repaint();
     }
     void callBack(){
-        int yValue = YSlider.getMaximum() - YSlider.getValue();
-        if(this.unit != null)unit.movePosition(new Position(XSlider.getValue(), yValue));
-        System.out.println("call back all to the bases");
+        this.mapUnit.movePosition(this.mapUnit.getInitialPosition());
     }
     void sendMessageAll(){
         messageFrom.setText("Tank 01");
         messageBody.setText("send troops to the west, we are ready to attack");
-        System.out.println("send message to all units ");
+        //System.out.println("send message to all units ");
     }
 
     void setPosition(){
         int yValue = YSlider.getMaximum() - YSlider.getValue();
-        if(this.unit != null)unit.movePosition(new Position(XSlider.getValue(), yValue));
-        System.out.println("call back all to the bases");
+        if(this.mapUnit != null)mapUnit.movePosition(new Position(XSlider.getValue(), yValue));
+        //System.out.println("call back all to the bases");
     }
 
 

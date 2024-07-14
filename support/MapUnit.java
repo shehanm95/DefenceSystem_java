@@ -18,6 +18,14 @@ public class MapUnit {
         this.icon = icon;
        
     }
+
+    /*
+    to increase speed add a lower value than 80;
+     */
+    public void changeSpeed(int speed){
+        this.speed = speed;
+        //System.out.println("greenUnit speed change to :" + speed);
+    }
     public MapUnit(Position position, ImageIcon icon) {
         this.x = position.getX();
         this.y = position.getY();
@@ -41,7 +49,7 @@ public class MapUnit {
         //positions.add(this.getPosition());
         int distance = calculateDistance(newPosition);
         steps = calculateSteps(distance);
-        System.out.println("final Position : " + newPosition);
+        //System.out.println("final Position : " + newPosition);
         if(Math.round(steps) ==0)steps = 1;
         float Dy =  Math.abs(( (this.y - newPosition.getY()))/steps);
         float Dx = Math.abs((this.x - newPosition.getX())/steps);
@@ -57,25 +65,6 @@ public class MapUnit {
             positions.add(bfrNewPos);
             i++;
         }
-        // for (int i = 0; i < steps; i++) {
-        //     bfrNewPos = new Position( (int) (this.x + (Dx* (i+1))), (int) (this.y + (Dy* (i+1))));
-        //     positions.add(bfrNewPos);
-        // }
-        // int distanceToFinalPos = Math.abs(calculateDistance(bfrNewPos,newPosition));
-        // if(distanceToFinalPos > Math.abs(Dx) |distanceToFinalPos > Math.abs(Dy) ){
-        //     bfrNewPos = new Position( (int) (bfrNewPos.getX() + Dx), (int) (bfrNewPos.getY() + Dy));
-        //     positions.add(bfrNewPos); 
-        // }
-
-        // Position bfrNewPos = this.getPosition();
-        // int i = 1;
-        // System.out.println("before loop called");
-        // do{
-        //     System.out.println("distance : " + calculateDistance(bfrNewPos, newPosition));
-        //     bfrNewPos = new Position( (int) (this.x + (Dx* (i++))), (int) (this.y + (Dy* i)));
-        //     positions.add(bfrNewPos);
-        // }while(calculateDistance(bfrNewPos, newPosition)> Math.abs(Dx));
-        
         positions.add(new Position(newPosition.getX(),newPosition.getY()));
     }
 

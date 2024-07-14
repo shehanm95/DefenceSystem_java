@@ -24,7 +24,7 @@ public class BackgroundAdder {
         // Set the custom panel as the content pane
         frame.setContentPane(panel);
         frame.setSize(new Dimension(width,height));
-        System.out.println("image width : " + imageIcon.getIconWidth());
+       // System.out.println("image width : " + imageIcon.getIconWidth());
         frame.setResizable(false);
     }
     public static JPanel addBackground(ImageIcon imageIcon) {

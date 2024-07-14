@@ -2,6 +2,7 @@ package support;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Panel;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
@@ -19,7 +20,7 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     private BackgroundPanel unitImage;
     private JLabel unitStatus = new JustifiedLabel("getToolTipText()", 70);
 
-
+   
     private ProgressBar energyBar;
     private ProgressBar strengthBar;
     private GreenUnit greenUnit = null;
@@ -39,9 +40,8 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         initComponents(type);
         addMouseListener(this);
         greenUnit = getGreenUnit();
-        mainController.setUnit( greenUnit);
+        mainController.setMapUnit( greenUnit);
         map.setGreenSelectorPosition(greenUnit);
-        
         
     }
 
@@ -80,7 +80,7 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         health -=20;
         System.out.println(health);
         greenUnit = getGreenUnit();
-        mainController.setUnit(greenUnit );
+        mainController.setMapUnit(greenUnit );
         map.setGreenSelectorPosition(greenUnit);
          
     }

@@ -1,5 +1,7 @@
 package support;
 
+import enums.EnemyType;
+
 public class PositionNType{
     public Position getPosition() {
         return position;

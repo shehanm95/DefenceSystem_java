@@ -44,10 +44,14 @@ public class DefenseMap extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
+       try {
         for (MapMoveable mapUnit : units){
             int size =(int) (mapUnit.getIconHeight()/4)+1;
             g.drawImage(mapUnit.getImage(), mapUnit.getX(), mapUnit.getY(), size,size , this);
         }
+       } catch (Exception e) {
+            System.out.println("Err : concurrent image rendering");
+       }
     }
 
     @Override

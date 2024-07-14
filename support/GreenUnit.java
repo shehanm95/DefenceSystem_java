@@ -1,25 +1,44 @@
 package support;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Queue;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
+import javax.swing.Timer;
 
 import enums.GreenUnitType;
 import intefaces.MapMoveable;
 
-public class GreenUnit extends MapUnit implements MapMoveable{
+public class GreenUnit extends MapUnit implements MapMoveable , ActionListener{
     private Position initialPosition;
+    public Position getInitialPosition() {
+        return initialPosition;
+    }
+
     private GreenUnitType unitType;
     private String unitName;
+    private Timer timer;
     private static Random random = new Random();
+    EnemyMapUnit nearestEnemy = null;
+    private boolean inAttack = false;
+    private boolean followingEnemy;
     private static EnemyInstantiateObj enemySpawner = EnemyInstantiateObj.getEnemyInstantiate();
+   
+    
+    //instance block
+    {   timer = new Timer(500, this);
+        timer.start();
+    }
+    
     public GreenUnit(int x, int y, ImageIcon icon, GreenUnitType greenUnitType, String unitName) {
         super(x, y, icon);
         unitType = greenUnitType;
         movePosition(setInitialPosition());
-        System.out.println("this called");
+     //   System.out.println("this called");
         this.unitName = unitName;
+        this.setSpeed();
     }
 
     public GreenUnit(Position position, ImageIcon image, GreenUnitType greenUnitType, String unitName) {
@@ -27,11 +46,18 @@ public class GreenUnit extends MapUnit implements MapMoveable{
         unitType = greenUnitType;
         movePosition(setInitialPosition());
         this.unitName = unitName;
+        this.setSpeed();
     }
 
     public void backToTheBase(){
         movePosition(initialPosition);
     }
+
+    private void setSpeed(){
+        if(unitType == GreenUnitType.Helicopter)changeSpeed(45);
+        if(unitType == GreenUnitType.Tank)changeSpeed(70);
+    }
+   
 
     @Override
     public Position setInitialPosition() {
@@ -56,9 +82,21 @@ public class GreenUnit extends MapUnit implements MapMoveable{
                     nearestEnemy = enemyMapUnit;
                 }
             }
+            this.nearestEnemy = nearestEnemy;
             return nearestEnemy;
         }
         return null;
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(!inAttack && !followingEnemy){
+            getNearestEnemy();
+            // if(nearestEnemy.getEnemyName() != null) System.out.println("from GreenMApUnit nearest Enemy to " + this.unitName + " : " + nearestEnemy.getEnemyName());
+        }
+    }
+
+    
+
     
 }
