@@ -14,13 +14,15 @@ public class EnemyMapUnit extends MapUnit implements MapMoveable {
     private Position midPosition;
     private Position finalPosition;
     private EnemyType enemyType;
-    private  Random random = new Random();
-    public EnemyMapUnit() {
-        super(-1, -1,  new ImageIcon("./images/enemy.png"));
-        setInitialPosition();
-        setPosition(initialPosition);
-        movePosition(getMidPosition());
-        finalPosition = getFinalPosition();
+    private static  Random random = new Random();
+    public EnemyMapUnit(PositionNType pNt) {
+        super(pNt.getPosition(),  new ImageIcon("./images/enemy.png"));
+        enemyType = pNt.getType();
+        initialPosition = pNt.getPosition();
+        //setInitialPosition();
+        //setPosition(initialPosition);
+        getMidPosition();
+        getFinalPosition();
     }
 
     
@@ -31,7 +33,10 @@ public class EnemyMapUnit extends MapUnit implements MapMoveable {
             this.x = pos.getX();
             this.y = pos.getY();
            // System.out.println("update FromChild");
-        }else if(this.checkPositionEquality(midPosition)){
+        }else if(this.checkPositionEquality(initialPosition)){
+            movePosition(midPosition);
+        }
+        else if(this.checkPositionEquality(midPosition)){
             movePosition(finalPosition);
         }
       //  System.out.println("update FromChild");
@@ -40,23 +45,7 @@ public class EnemyMapUnit extends MapUnit implements MapMoveable {
     }
 
     public Position setInitialPosition(){
-        Position iPos;
-        int typeChooser = random.nextInt(3);
-        if(typeChooser < 2){enemyType =EnemyType.ArmyEnemy;}
-        else{enemyType = EnemyType.NavyEnemy;}
-        
-        if(enemyType == EnemyType.ArmyEnemy){
-            iPos = new Position(random.nextInt(20) + 5, random.nextInt(5)+20);
-          
-            
-        }
-        else{ iPos = new Position(random.nextInt(360) + 30, 1);};
-        
-        System.out.println(iPos + " : " + enemyType.toString());
-        return iPos;
-
-    
-
+        return new Position(0,0);
     }
 
     public Position getMidPosition(){
@@ -83,5 +72,26 @@ public class EnemyMapUnit extends MapUnit implements MapMoveable {
             finalPosition = DefenseSystem.NavyBasePosition;
         }
         return finalPosition;
-    }   
+    }  
+    
+    
+    public static PositionNType SetInitialPositionAndType(){
+        Position iPos = null;
+        EnemyType enemyType = null;
+        int typeChooser = random.nextInt(3);
+        if(typeChooser < 2){enemyType =EnemyType.ArmyEnemy;}
+        else{enemyType = EnemyType.NavyEnemy;}
+        
+        if(enemyType == EnemyType.ArmyEnemy){
+            iPos = new Position(random.nextInt(20) + 5, random.nextInt(5)+20);
+          
+            
+        }
+        else{ iPos = new Position(random.nextInt(360) + 30, 1);};
+        
+        System.out.println(iPos + " : " + enemyType.toString());
+        return new PositionNType(iPos, enemyType);
+    }
+
+    
 }

@@ -1,5 +1,7 @@
 package support;
 
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class EnemyInstantiateObj implements Runnable {
     
@@ -9,6 +11,7 @@ public class EnemyInstantiateObj implements Runnable {
     private EnemyInstantiateObj(){
         instantiateThread.start();
     }
+    private static Queue<EnemyMapUnit> allEnemiesInMap = new LinkedList<>();
 
     public static EnemyInstantiateObj getEnemyInstantiate(){
         if (obj == null) {
@@ -16,11 +19,16 @@ public class EnemyInstantiateObj implements Runnable {
         }
         return obj;
     }
+
+    public Queue<EnemyMapUnit> getAllEnemyList(){
+        return allEnemiesInMap;
+    }
+
     @Override
     public void run() {
         
             try {
-                Thread.sleep(2000);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -29,7 +37,7 @@ public class EnemyInstantiateObj implements Runnable {
             try {
                 EnemyMapUnit enemy = getNewEnemy();
                 map.addUnitsToMap(enemy);
-                Thread.sleep(50000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -38,9 +46,9 @@ public class EnemyInstantiateObj implements Runnable {
     }
 
     private EnemyMapUnit getNewEnemy() {
-        EnemyMapUnit enemy = new EnemyMapUnit();
+        EnemyMapUnit enemy = new EnemyMapUnit(EnemyMapUnit.SetInitialPositionAndType());
+        allEnemiesInMap.add(enemy);
         return enemy;
-        
     }
 
 

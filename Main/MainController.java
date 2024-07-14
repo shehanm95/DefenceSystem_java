@@ -24,6 +24,7 @@ public class MainController extends JFrame {
     JButton deployHeliButton = new ImageButton("images/LaunchHeli.png");
     JButton deployTankButton = new ImageButton("images/LaunchTank.png");
     JButton deploySubButton = new ImageButton("images/LaunchSub.png");
+    int heliNum=0,tankNum=0,subNum=0;
 
     JButton callBackButton = new ImageButton("images/BackAll.png");
 
@@ -181,13 +182,17 @@ public class MainController extends JFrame {
     }
     void deployHeli(){
         System.out.println("deployHeli");
-        SelectionButton heli = new SelectionButton(GreenUnitType.AirForce);
+        SelectionButton heli = new SelectionButton(GreenUnitType.Helicopter , String.format(" %02d", ++heliNum));
         selectionButtonPanel.add(heli); 
         selectionButtonPanel.revalidate();
         selectionButtonPanel.repaint();
     }
     void deployTank(){
         System.out.println("deployTank");
+        SelectionButton tank = new SelectionButton(GreenUnitType.Tank , String.format(" %02d", ++tankNum));
+        selectionButtonPanel.add(tank); 
+        selectionButtonPanel.revalidate();
+        selectionButtonPanel.repaint();
     }
     void deploySub(){
         System.out.println("deploySub");

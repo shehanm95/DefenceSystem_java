@@ -48,9 +48,34 @@ public class MapUnit {
         if(this.y > newPosition.getY()){ Dy = -Dy;}
         if(this.x > newPosition.getX()){Dx= -Dx;}
 
-        for (int i = 0; i < steps; i++) {
-            positions.add(new Position( (int) (this.x + (Dx* (i+1))), (int) (this.y + (Dy* (i+1)))));
+        Position bfrNewPos = this.getPosition();
+        int i = 1;
+        int lastDist = 1000;
+        while(calculateDistance(bfrNewPos, newPosition) < lastDist) {
+            lastDist = calculateDistance(bfrNewPos, newPosition);
+            bfrNewPos = new Position( (int) (this.x + (Dx* (i+1))), (int) (this.y + (Dy* (i+1))));
+            positions.add(bfrNewPos);
+            i++;
         }
+        // for (int i = 0; i < steps; i++) {
+        //     bfrNewPos = new Position( (int) (this.x + (Dx* (i+1))), (int) (this.y + (Dy* (i+1))));
+        //     positions.add(bfrNewPos);
+        // }
+        // int distanceToFinalPos = Math.abs(calculateDistance(bfrNewPos,newPosition));
+        // if(distanceToFinalPos > Math.abs(Dx) |distanceToFinalPos > Math.abs(Dy) ){
+        //     bfrNewPos = new Position( (int) (bfrNewPos.getX() + Dx), (int) (bfrNewPos.getY() + Dy));
+        //     positions.add(bfrNewPos); 
+        // }
+
+        // Position bfrNewPos = this.getPosition();
+        // int i = 1;
+        // System.out.println("before loop called");
+        // do{
+        //     System.out.println("distance : " + calculateDistance(bfrNewPos, newPosition));
+        //     bfrNewPos = new Position( (int) (this.x + (Dx* (i++))), (int) (this.y + (Dy* i)));
+        //     positions.add(bfrNewPos);
+        // }while(calculateDistance(bfrNewPos, newPosition)> Math.abs(Dx));
+        
         positions.add(new Position(newPosition.getX(),newPosition.getY()));
     }
 
@@ -80,6 +105,15 @@ public class MapUnit {
     public int calculateDistance(Position position){
         float xDistance = Math.abs(this.x - position.getX());
         float yDistance = Math.abs(this.y - position.getY());
+        
+        double distance = Math.sqrt((yDistance*yDistance) + (xDistance*xDistance));
+       // System.out.println("Distance : " + distance);
+        return (int) distance;
+
+    }
+    public int calculateDistance(Position position1, Position position2){
+        float xDistance = Math.abs(position2.getX() - position1.getX());
+        float yDistance = Math.abs(position2.getY() - position1.getY());
         
         double distance = Math.sqrt((yDistance*yDistance) + (xDistance*xDistance));
        // System.out.println("Distance : " + distance);

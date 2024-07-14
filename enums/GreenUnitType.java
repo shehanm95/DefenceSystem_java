@@ -1,5 +1,5 @@
 package enums;
 
 public enum GreenUnitType {
-    Army,Navy,AirForce
+    Tank,Submarine,Helicopter
 }

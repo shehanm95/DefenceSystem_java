@@ -26,14 +26,16 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     GreenUnitType type = null;
     MainController mainController = MainController.getMainController();
     private DefenseMap map = DefenseMap.getDefenseMap();
+    String unitNum = "";
     
     
-    public SelectionButton(GreenUnitType type){
+    
+    public SelectionButton(GreenUnitType type , String unitNum){
         super(new ImageIcon("./images/SelectionButton.png"), new Dimension(88,98));
         this.type = type;
+        this.unitNum = unitNum;
         setBorder(new EmptyBorder(0, 0, 0, 0));
-        unitWindow =new UnitWindow(GreenUnitType.AirForce);
-        unitWindow.setTitle(type.toString());
+        unitWindow =new UnitWindow(type, unitNum);
         initComponents(type);
         addMouseListener(this);
         greenUnit = getGreenUnit();
@@ -86,9 +88,9 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     public GreenUnit getGreenUnit(){
         if(greenUnit == null){
             ImageIcon image = new ImageIcon("./images/unit.png");
-            if(type == GreenUnitType.Navy)  greenUnit = new GreenUnit(DefenseSystem.NavyBasePosition, image,GreenUnitType.Navy);
-            if(type == GreenUnitType.Army)  greenUnit = new GreenUnit(DefenseSystem.ArmyBasePosition, image,GreenUnitType.Army);
-            if(type == GreenUnitType.AirForce)  greenUnit = new GreenUnit(DefenseSystem.AirForceBasePosition, image,GreenUnitType.AirForce);
+            if(type == GreenUnitType.Submarine)  greenUnit = new GreenUnit(DefenseSystem.NavyBasePosition, image,GreenUnitType.Submarine, unitNum);
+            if(type == GreenUnitType.Tank)  greenUnit = new GreenUnit(DefenseSystem.ArmyBasePosition, image,GreenUnitType.Tank, unitNum);
+            if(type == GreenUnitType.Helicopter)  greenUnit = new GreenUnit(DefenseSystem.AirForceBasePosition, image,GreenUnitType.Helicopter, unitNum);
             DefenseMap.getDefenseMap().addUnitsToMap(greenUnit);
         }
         return greenUnit;

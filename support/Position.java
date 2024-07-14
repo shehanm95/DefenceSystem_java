@@ -6,6 +6,10 @@ public class Position{
         this.x = x;
         this.y = y;
     }
+    public Position(Position Position) {
+        this.x = Position.getX();
+        this.y = Position.getY();
+    }
     @Override
     public String toString() {
         return "Position [x=" + x + ", y=" + y + "]";
