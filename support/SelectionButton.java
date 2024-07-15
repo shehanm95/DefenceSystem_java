@@ -10,9 +10,9 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputListener;
 
-import Main.DefenseSystem;
-import Main.MainController;
-import Main.UnitWindow;
+import MainClass.DefenseSystem;
+import UIWindows.MainController;
+import UIWindows.UnitWindow;
 import enums.GreenUnitType;
 
 public class SelectionButton extends BackgroundPanel implements MouseInputListener {

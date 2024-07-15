@@ -48,7 +48,7 @@ public class ImageButton extends JButton {
     @Override
     protected void paintBorder(Graphics g) {
         // Ensure the border color is always black
-        g.setColor(Color.BLACK);
+        g.setColor(new Color(0,0,0,0));
         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
     

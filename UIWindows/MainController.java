@@ -1,6 +1,7 @@
-package Main;
+package UIWindows;
 import javax.swing.*;
 
+import MainClass.DefenseSystem;
 import enums.GreenUnitType;
 import support.*;
 import java.awt.*;
@@ -58,6 +59,7 @@ public class MainController extends JFrame {
         setResizable(false);
         setVisible(true);
         EnemyInstantiateObj.getEnemyInstantiate();
+        
     }
 
 
@@ -163,6 +165,8 @@ public class MainController extends JFrame {
         radarRotator.setOpaque(false);
         radarRotator.setVisible(false);
         radarRotator.setBounds(145, 137, 267, 267);
+
+       
     }
 
     public GreenUnit getMapUnit() {

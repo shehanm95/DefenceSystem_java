@@ -1,7 +1,8 @@
-package Main;
+package MainClass;
 
 import java.awt.Color;
 
+import UIWindows.MainController;
 import support.Position;
 
 /**

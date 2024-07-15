@@ -4,7 +4,7 @@ import java.util.Random;
 
 import javax.swing.ImageIcon;
 
-import Main.DefenseSystem;
+import MainClass.DefenseSystem;
 import enums.EnemyType;
 import intefaces.MapMoveable;
 
