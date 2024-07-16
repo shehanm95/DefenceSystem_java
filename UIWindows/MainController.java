@@ -27,7 +27,7 @@ public class MainController extends JFrame {
     JButton deploySubButton = new ImageButton("images/LaunchSub.png");
     int heliNum=0,tankNum=0,subNum=0;
 
-    JButton callBackButton = new ImageButton("images/BackAll.png");
+    JButton backToBase = new ImageButton("images/backToBase.png");
 
     JPanel selectionButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,4,0));
     
@@ -46,6 +46,8 @@ public class MainController extends JFrame {
     JLabel messageBody = new JustifiedLabel("Message Body will Display here.",94);
 
     private GreenUnit mapUnit;
+    private MyCheckBox clearAreaCheckBox;
+    private boolean areaCleared;
     
     private static MainController mainController = null;
 
@@ -86,11 +88,14 @@ public class MainController extends JFrame {
         getContentPane().add(XSlider);
         XSlider.setOpaque(false);
         XSlider.setBounds(88,79,380,20);
-
+        
         getContentPane().add(YSlider);
         YSlider.setOpaque(false);
         YSlider.setBounds(30,122,40,302);
 
+
+        XSlider.addChangeListener((e)->{setPosition();});
+        YSlider.addChangeListener((e)->{setPosition();});
         getContentPane().add(map);
         map.setBounds(88,122, 380, 302);
         
@@ -121,10 +126,21 @@ public class MainController extends JFrame {
         
         
         //Call Back
-        getContentPane().add(callBackButton);
-        callBackButton.addActionListener((e)-> callBack());
-        callBackButton.setBounds(32, 507, 210, 30); 
+        getContentPane().add(backToBase);
+        backToBase.addActionListener((e)-> callBack());
+        backToBase.setBounds(138, 510, 102, 19); 
         
+        
+        clearAreaCheckBox = new MyCheckBox("Area cleared", false);
+        clearAreaCheckBox.addActionListener((e)->areaClearMessage());
+        clearAreaCheckBox.setBounds(22, 504, 120, 30);
+
+        clearAreaCheckBox.setOpaque(false);
+        add(clearAreaCheckBox);
+        
+
+
+
         //selectionButtonPanel
         
         getContentPane().add(selectionButtonPanel);
@@ -168,6 +184,16 @@ public class MainController extends JFrame {
 
        
     }
+
+    private void areaClearMessage() {
+        areaCleared = areaCleared ? false : true;
+        System.out.println(areaCleared);
+        for (Component selectionButton : selectionButtonPanel.getComponents()) {
+            SelectionButton button = (SelectionButton) selectionButton;
+            button.getGreenUnit().getUnitWindow().setAreaClearLabel(areaCleared);
+        }
+    }
+
 
     public GreenUnit getMapUnit() {
         return mapUnit;
@@ -215,9 +241,15 @@ public class MainController extends JFrame {
     }
 
     void setPosition(){
+        if(this.mapUnit != null && this.mapUnit.getUnitWindow().getPositionChangePermission()){
         int yValue = YSlider.getMaximum() - YSlider.getValue();
-        if(this.mapUnit != null)mapUnit.movePosition(new Position(XSlider.getValue(), yValue));
+        if(this.mapUnit != null)mapUnit.movePosition(new Position(XSlider.getValue(), yValue));}
         //System.out.println("call back all to the bases");
+    }
+
+
+    public boolean getAreaClearStatus() {
+        return areaCleared;
     }
 
 

@@ -57,10 +57,14 @@ public class DefenseMap extends JPanel implements Runnable {
     @Override
     public void run() {
         while (true) {
+           try {
             for (MapMoveable mapUnit : units) {
                 mapUnit.updatePosition();
                // System.out.println(mapUnit.x + " "+ mapUnit.y);
             }
+           } catch (Exception e) {
+            System.out.println("ConcurrentModificationException handled");
+           }
             if(selectedGreenUnit != null){unitSelector.setBounds(selectedGreenUnit.getX()-7,selectedGreenUnit.getY()-8, 24, 24);}
             repaint();
             try {

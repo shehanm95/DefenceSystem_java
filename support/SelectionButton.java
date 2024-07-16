@@ -31,15 +31,16 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     
     
     
+    
     public SelectionButton(GreenUnitType type , String unitNum){
         super(new ImageIcon("./images/SelectionButton.png"), new Dimension(88,98));
         this.type = type;
         this.unitNum = unitNum;
         setBorder(new EmptyBorder(0, 0, 0, 0));
-        unitWindow =new UnitWindow(type, unitNum);
         initComponents(type);
         addMouseListener(this);
         greenUnit = getGreenUnit();
+        unitWindow =new UnitWindow(greenUnit, unitNum);
         mainController.setMapUnit( greenUnit);
         map.setGreenSelectorPosition(greenUnit);
         

@@ -8,12 +8,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import MainClass.DefenseSystem;
-import enums.GreenUnitType;
 import enums.JustifiedLabelAlignment;
 import support.BackgroundAdder;
 import support.DefenseLabel;
+import support.EnemyMapUnit;
+import support.GreenUnit;
 import support.ImageButton;
 import support.JustifiedLabel;
+import support.MyCheckBox;
 import support.SuperDefense;
 
 public class UnitWindow extends SuperDefense {
@@ -24,20 +26,30 @@ public class UnitWindow extends SuperDefense {
     private JPanel buttonPanelEnemyDetails1 = new JPanel();
     private ImageButton missileOperationButton;
     private ImageButton stopHereButton;
-    private JCheckBox areaClearedCheckBox;
-    private boolean areaClearedBool;
+    private MyCheckBox positionChangeAllowCBox;
+    private GreenUnit greenUnit;
+    private JPanel noNearestEnemyPanel;
+    private ImageButton shootButton;
+    private ImageButton followButton;
+    private boolean positionChangeAllow = true;
+    private DefenseLabel areaClearStatusLabel;
+    MainController controller;
+    MainMessageSender massageSender;
 
 
 
 
-    public UnitWindow(GreenUnitType unitType , String unitNumber){
-        setTitle(unitType.toString() + unitNumber);
+    public UnitWindow(GreenUnit greenUnit , String unitNumber){
+        this.greenUnit = greenUnit;
+        greenUnit.setUnitWindow(this);
+        setTitle(greenUnit.getGreenUnitType().toString() + unitNumber);
         BackgroundAdder.addBackground(this, new ImageIcon("./images/Unit/unitBack.png"),766,546);
-        JFrame controller = MainController.getMainController();
+        controller = MainController.getMainController();
         setLocationRelativeTo(controller);
         setVisible(true);
-
         initComponents();
+        setAreaClearLabel(controller.getAreaClearStatus());
+        
     }
 
 
@@ -46,6 +58,10 @@ public class UnitWindow extends SuperDefense {
 
         this.add(messageFromLabel);
         messageFromLabel.setBounds(28, 22, 230, 13);
+
+        areaClearStatusLabel = new DefenseLabel("| Area Not Cleared.", 12);
+        this.add(areaClearStatusLabel);
+        areaClearStatusLabel.setBounds(275, 22, 230, 13);
         
         this.add(incomingMessage);
         incomingMessage.setBounds(44, 57, 355, 20);
@@ -56,17 +72,26 @@ public class UnitWindow extends SuperDefense {
         sendMessageButton.setBounds(34, 175, 359, 25);
         sendMessageButton.addActionListener((e)->sendMessage());
 
+        noNearestEnemyPanel = new JPanel();
+        add(noNearestEnemyPanel);
+        noNearestEnemyPanel.setBounds(37, 260, 359, 60);
+        DefenseLabel noEnemyLabel1 = new DefenseLabel("No Enemy contact detected", 14);
+        DefenseLabel noEnemyLabel2 = new DefenseLabel("within the designated engagement zone", 14);
+        noNearestEnemyPanel.setOpaque(false);
+        noNearestEnemyPanel.add(noEnemyLabel1);
+        noNearestEnemyPanel.add(noEnemyLabel2);
+
 
         add(buttonPanelEnemyDetails1);
         buttonPanelEnemyDetails1.setBounds(21,372,400,30);
         buttonPanelEnemyDetails1.setOpaque(false);
         buttonPanelEnemyDetails1.setLayout(new FlowLayout(FlowLayout.LEFT ,13,0));
         
-       ImageButton shootButton = new ImageButton("./images/Unit/shootButton.png", 0);
+       shootButton = new ImageButton("./images/Unit/shootButton.png", 0);
        shootButton.addActionListener((e)->shoot());
        buttonPanelEnemyDetails1.add(shootButton);
        
-       ImageButton followButton = new ImageButton("./images/Unit/followButton.png", 0);
+       followButton = new ImageButton("./images/Unit/followButton.png", 0);
        followButton.addActionListener((e)->follow());
        buttonPanelEnemyDetails1.add(followButton);
 
@@ -82,22 +107,72 @@ public class UnitWindow extends SuperDefense {
         stopHereButton.addActionListener((e)->stopHere());
         
         
-        areaClearedCheckBox = new JCheckBox("                                              ", null, areaClearedBool);
-        areaClearedCheckBox.addActionListener((e)->{System.out.println("area cleared :" + areaClearedBool);});
-        add(areaClearedCheckBox);
-        areaClearedCheckBox.setBorder(null);
-        areaClearedCheckBox.setFocusPainted(false);
-        areaClearedCheckBox.setBorderPainted(false);
-        areaClearedCheckBox.setBounds(227,467,70,25);
-        areaClearedCheckBox.setOpaque(false);
+        positionChangeAllowCBox = new MyCheckBox("                                 ",true);
+        positionChangeAllowCBox.addActionListener((e)->positionChangeAllow());
+        add(positionChangeAllowCBox);
+        positionChangeAllowCBox.setBorder(null);
+        positionChangeAllowCBox.setFocusPainted(false);
+        positionChangeAllowCBox.setBorderPainted(false);
+        positionChangeAllowCBox.setBounds(227,467,200,25);
+        positionChangeAllowCBox.setOpaque(false);
+
+        DefenseLabel letMainControllerTo = new DefenseLabel("let Main Controller to", 12);
+        add(letMainControllerTo);
+        letMainControllerTo.setBounds(247,458,200,25);
+        DefenseLabel changeThePosition = new DefenseLabel("Change the Position", 12); 
+        add(changeThePosition);
+        changeThePosition.setBounds(247,472,200,25);
+
 
         
 
-
-
-
     }
 
+    private void positionChangeAllow() {
+        positionChangeAllow = ( positionChangeAllow == true) ? false : true; 
+        System.out.println(positionChangeAllow); 
+    }
+
+    public boolean getPositionChangePermission(){
+        return positionChangeAllow; 
+    }
+
+
+    public void updateNearestEnemyDetails(EnemyMapUnit nearestEnemyMapUnit , int distance) {
+        if(nearestEnemyMapUnit == null){
+            noNearestEnemyPanel.setVisible(true);
+            followButton.setEnabled(false);
+            shootButton.setEnabled(false); 
+            missileOperationButton.setEnabled(false);
+            //System.out.println("calling as Null");
+
+        } else{
+        noNearestEnemyPanel.setVisible(false);
+        noNearestEnemyPanel.revalidate();
+        noNearestEnemyPanel.repaint();
+        if(distance < 60){
+            followButton.setEnabled(true);
+        }
+        if(distance < 45){
+            shootButton.setEnabled(true);
+        }
+        if(distance < 65){
+            missileOperationButton.setEnabled(true);
+        }
+
+        //System.out.println("calling as not Null");
+    }
+    revalidate();
+    this.repaint();
+    }
+
+    public void setAreaClearLabel(boolean areaCleared){
+        
+        if(areaCleared) areaClearStatusLabel.setText("| AREA CLEARED");
+        else areaClearStatusLabel.setText("| AREA NOT CLEARED.");
+        this.revalidate();
+        this.repaint();
+    }
 
     private Object follow() {
         // TODO Auto-generated method stub
