@@ -11,6 +11,5 @@ public class DefenseLabel extends JLabel {
         super(initialText.toUpperCase());
         setFont(new Font("" , 1, fontSize));
         this.setForeground(DefenseSystem.PrimaryfontColor);
-        
     }
 }

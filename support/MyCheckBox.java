@@ -15,6 +15,7 @@ public class MyCheckBox extends JCheckBox {
         labelText = labelText.toUpperCase();
         setForeground(DefenseSystem.PrimaryfontColor);    
         setFont(font);
+        setOpaque(false);
     }
     public MyCheckBox(String labelText , boolean initialBool, int fontSize){
         super(labelText.toUpperCase(), initialBool);

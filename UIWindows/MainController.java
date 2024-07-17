@@ -3,23 +3,23 @@ import javax.swing.*;
 
 import MainClass.DefenseSystem;
 import enums.GreenUnitType;
+import intefaces.MsgReceivable;
 import support.*;
 import java.awt.*;
+import java.util.Arrays;
 
-public class MainController extends JFrame {
+public class MainController extends JFrame implements MsgReceivable {
     
     JButton setPositionButton = new ImageButton("images/setPositionButton.png",43,31);
     ImageButton shehanButton = new ImageButton("images/shehanButton.png",0);
+    private GreenUnitType unitType = GreenUnitType.MainController;
     
     JSlider XSlider = new JSlider(JSlider.HORIZONTAL,0 , 380,20);
     JSlider YSlider = new JSlider(JSlider.VERTICAL,0 , 292,20);
 
     DefenseMap map = DefenseMap.getDefenseMap();
     RotatingImagePanel radarRotator = new RotatingImagePanel("images/RadarRotator.png");
-
-        
     
-
     JPanel launchButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
     //deploy unit buttons
     JButton deployHeliButton = new ImageButton("images/LaunchHeli.png");
@@ -42,12 +42,15 @@ public class MainController extends JFrame {
     JButton sendMessageToAllButton = new ImageButton("images/SendMessageToAll.png",1);
     
     BackgroundPanel receivedMessagePanel = new BackgroundPanel(new ImageIcon("images/ReceivedMessagesBack.png"), 0);
-    JLabel messageFrom = new JustifiedLabel("No Received Messages",100);
-    JLabel messageBody = new JustifiedLabel("Message Body will Display here.",94);
+    DefenseLabel messageFrom = new DefenseLabel("No Received Messages",13);
+    JustifiedLabel messageBody = new JustifiedLabel("Message Body will Display here.",94);
 
     private GreenUnit mapUnit;
     private MyCheckBox clearAreaCheckBox;
     private boolean areaCleared;
+    private MessageSender massageSender;
+    private JScrollPane msgScroller;
+    private JTextArea msgTextArea;
     
     private static MainController mainController = null;
 
@@ -160,7 +163,14 @@ public class MainController extends JFrame {
 
         middlePanel.add(areaClearedStatus);
         middlePanel.add(sendMessageToAllButton);
-        sendMessageToAllButton.addActionListener((e)->sendMessageAll());
+        sendMessageToAllButton.addActionListener((e)->{
+            if(getMsgReceivables().length <= 1){
+                JOptionPane.showMessageDialog(null, "You Have to initialize Units first", "No war units found !", JOptionPane.ERROR_MESSAGE);
+                return;
+            }else{
+                sendMessage(mainController, getMsgReceivables());
+            }
+        });
         middlePanel.add(receivedMessagePanel);
 
         receivedMessagePanel.setLayout(null);
@@ -169,6 +179,7 @@ public class MainController extends JFrame {
         
         
         messageFrom.setForeground(DefenseSystem.PrimaryfontColor);
+        messageFrom.setHorizontalAlignment(SwingConstants.CENTER);
         messageBody.setForeground(DefenseSystem.PrimaryfontColor);
         messageBody.setBackground(Color.GRAY);
         messageFrom.setBounds(0,4,128,20);
@@ -182,7 +193,21 @@ public class MainController extends JFrame {
         radarRotator.setVisible(false);
         radarRotator.setBounds(145, 137, 267, 267);
 
-       
+       msgScroller = new JScrollPane();
+       getContentPane().add(msgScroller);
+       msgScroller.setBounds(638, 348, 280, 180);
+       msgScroller.setOpaque(false);
+       msgScroller.setBorder(null);
+       msgScroller.getViewport().setOpaque(false);
+
+       msgTextArea = new JTextArea();
+       msgScroller.add(msgTextArea);
+       msgTextArea.setLineWrap(true);
+       msgTextArea.setEditable(false);
+       msgTextArea.setOpaque(false);
+       msgTextArea.setFont(DefenseSystem.defenseFont);
+       msgTextArea.setForeground(DefenseSystem.PrimaryfontColor);
+       msgScroller.setViewportView(msgTextArea);
     }
 
     private void areaClearMessage() {
@@ -250,6 +275,44 @@ public class MainController extends JFrame {
 
     public boolean getAreaClearStatus() {
         return areaCleared;
+    }
+
+    public MsgReceivable[] getMsgReceivables() {
+        // getting all the unit windows int to array;
+        Component[] subUnits = selectionButtonPanel.getComponents();
+        MsgReceivable[] msgReceivables = new MsgReceivable[subUnits.length + 1];
+        msgReceivables[0] = this;
+        for (int i = 1; i < msgReceivables.length; i++)
+            msgReceivables[i] =((SelectionButton) subUnits[i-1]).getGreenUnit().getUnitWindow();
+
+        return msgReceivables;
+    }
+
+
+
+
+    @Override
+   public MessageSender getMessageSender() {
+        if(massageSender == null)massageSender = new MessageSender();
+        return massageSender;
+    }
+
+
+    @Override
+    public String getSenderName() {
+        return "Main Controller";
+    }
+
+
+    @Override
+    public JTextArea getMsgDisplayArea() {
+        return msgTextArea;
+    }
+
+
+    @Override
+    public GreenUnitType getGreenUnitType() {
+        return unitType;
     }
 
 

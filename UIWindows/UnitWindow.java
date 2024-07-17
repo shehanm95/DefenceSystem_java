@@ -3,12 +3,14 @@ package UIWindows;
 import java.awt.FlowLayout;
 
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import MainClass.DefenseSystem;
+import enums.GreenUnitType;
 import enums.JustifiedLabelAlignment;
+import intefaces.MsgReceivable;
 import support.BackgroundAdder;
 import support.DefenseLabel;
 import support.EnemyMapUnit;
@@ -18,10 +20,8 @@ import support.JustifiedLabel;
 import support.MyCheckBox;
 import support.SuperDefense;
 
-public class UnitWindow extends SuperDefense {
+public class UnitWindow extends SuperDefense implements MsgReceivable {
     
-    private DefenseLabel messageFromLabel = new DefenseLabel("Message From", 14); 
-    private JustifiedLabel incomingMessage = new JustifiedLabel("initial Message",350,JustifiedLabelAlignment.Top_Left);
     private ImageButton sendMessageButton;
     private JPanel buttonPanelEnemyDetails1 = new JPanel();
     private ImageButton missileOperationButton;
@@ -34,7 +34,10 @@ public class UnitWindow extends SuperDefense {
     private boolean positionChangeAllow = true;
     private DefenseLabel areaClearStatusLabel;
     MainController controller;
-    MainMessageSender massageSender;
+    MessageSender massageSender;
+    private String unitName;
+    private JScrollPane msgScroller;
+    private JTextArea msgTextArea;
 
 
 
@@ -42,7 +45,8 @@ public class UnitWindow extends SuperDefense {
     public UnitWindow(GreenUnit greenUnit , String unitNumber){
         this.greenUnit = greenUnit;
         greenUnit.setUnitWindow(this);
-        setTitle(greenUnit.getGreenUnitType().toString() + unitNumber);
+        unitName = greenUnit.getGreenUnitType().toString() + unitNumber;
+        setTitle(unitName);
         BackgroundAdder.addBackground(this, new ImageIcon("./images/Unit/unitBack.png"),766,546);
         controller = MainController.getMainController();
         setLocationRelativeTo(controller);
@@ -56,21 +60,34 @@ public class UnitWindow extends SuperDefense {
     private void initComponents(){
         this.setLayout(null);
 
-        this.add(messageFromLabel);
-        messageFromLabel.setBounds(28, 22, 230, 13);
+        
 
         areaClearStatusLabel = new DefenseLabel("| Area Not Cleared.", 12);
         this.add(areaClearStatusLabel);
         areaClearStatusLabel.setBounds(275, 22, 230, 13);
         
-        this.add(incomingMessage);
-        incomingMessage.setBounds(44, 57, 355, 20);
-        incomingMessage.setForeground(DefenseSystem.PrimaryfontColor);
+        msgScroller = new JScrollPane();
+       getContentPane().add(msgScroller);
+       msgScroller.setBounds(37, 54, 351, 98);
+       msgScroller.setOpaque(false);
+       msgScroller.setBorder(null);
+       msgScroller.getViewport().setOpaque(false);
+
+       msgTextArea = new JTextArea();
+       msgScroller.add(msgTextArea);
+       msgTextArea.setLineWrap(true);
+       msgTextArea.setEditable(false);
+       msgTextArea.setOpaque(false);
+       msgTextArea.setFont(DefenseSystem.defenseFont);
+       msgTextArea.setForeground(DefenseSystem.PrimaryfontColor);
+       msgScroller.setViewportView(msgTextArea);
         
         sendMessageButton = new ImageButton("./images/Unit/SendMessageButton.png");
         this.add(sendMessageButton);
         sendMessageButton.setBounds(34, 175, 359, 25);
-        sendMessageButton.addActionListener((e)->sendMessage());
+        sendMessageButton.addActionListener((e)->{
+            sendMessage(this, new MsgReceivable[]{controller});
+        });
 
         noNearestEnemyPanel = new JPanel();
         add(noNearestEnemyPanel);
@@ -80,7 +97,6 @@ public class UnitWindow extends SuperDefense {
         noNearestEnemyPanel.setOpaque(false);
         noNearestEnemyPanel.add(noEnemyLabel1);
         noNearestEnemyPanel.add(noEnemyLabel2);
-
 
         add(buttonPanelEnemyDetails1);
         buttonPanelEnemyDetails1.setBounds(21,372,400,30);
@@ -196,10 +212,27 @@ public class UnitWindow extends SuperDefense {
         throw new UnsupportedOperationException("Unimplemented method 'stopHere'");
     }
 
-
-    private Object sendMessage() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendMessage'");
+    @Override
+    public MessageSender getMessageSender() {
+        if(massageSender == null)massageSender = new MessageSender();
+        return massageSender;
     }
 
+
+    @Override
+    public String getSenderName() {
+        return  unitName ;
+    }
+
+
+    @Override
+    public JTextArea getMsgDisplayArea() {
+        return msgTextArea;
+    }
+
+
+    @Override
+    public GreenUnitType getGreenUnitType() {
+        return greenUnit.getGreenUnitType();
+    }
 }
