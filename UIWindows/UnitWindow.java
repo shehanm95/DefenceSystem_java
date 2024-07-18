@@ -6,10 +6,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 import MainClass.DefenseSystem;
 import enums.GreenUnitType;
 import enums.JustifiedLabelAlignment;
+import enums.StrengthLevels;
 import intefaces.MsgReceivable;
 import support.BackgroundAdder;
 import support.DefenseLabel;
@@ -19,6 +21,7 @@ import support.ImageButton;
 import support.JustifiedLabel;
 import support.MyCheckBox;
 import support.SuperDefense;
+import support.unitDetail.UnitDetail;
 
 public class UnitWindow extends SuperDefense implements MsgReceivable {
     
@@ -38,6 +41,8 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
     private String unitName;
     private JScrollPane msgScroller;
     private JTextArea msgTextArea;
+    private DefenseLabel noMessageLabel;
+    private UnitDetail unitDetail;
 
 
 
@@ -64,7 +69,7 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
 
         areaClearStatusLabel = new DefenseLabel("| Area Not Cleared.", 12);
         this.add(areaClearStatusLabel);
-        areaClearStatusLabel.setBounds(275, 22, 230, 13);
+        areaClearStatusLabel.setBounds(275, 16, 230, 13);
         
         msgScroller = new JScrollPane();
        getContentPane().add(msgScroller);
@@ -140,7 +145,14 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
         changeThePosition.setBounds(247,472,200,25);
 
 
-        
+        noMessageLabel = new DefenseLabel("- No Messages To Display - ", 13);
+        noMessageLabel.setBounds(57,80,313,42);
+        getContentPane().add(noMessageLabel);
+        noMessageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        unitDetail = new UnitDetail();
+        unitDetail.setBounds(417, 15, 319,241);
+        getContentPane().add(unitDetail);
 
     }
 
@@ -154,30 +166,51 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
     }
 
 
-    public void updateNearestEnemyDetails(EnemyMapUnit nearestEnemyMapUnit , int distance) {
-        if(nearestEnemyMapUnit == null){
-            noNearestEnemyPanel.setVisible(true);
-            followButton.setEnabled(false);
-            shootButton.setEnabled(false); 
-            missileOperationButton.setEnabled(false);
-            //System.out.println("calling as Null");
-
-        } else{
-        noNearestEnemyPanel.setVisible(false);
-        noNearestEnemyPanel.revalidate();
-        noNearestEnemyPanel.repaint();
-        if(distance < 60){
-            followButton.setEnabled(true);
+    private StrengthLevels getStrengthLevels(EnemyMapUnit nearestEnemyMapUnit, int distance){
+        // LOW,MEDIUM,HIGH,STRONG,CLOSED
+        if(nearestEnemyMapUnit == null ) return StrengthLevels.LOW;
+        else{
+            if(distance < 45) return StrengthLevels.STRONG;
+            else if(distance < 60) return StrengthLevels.HIGH;
+            else if(distance < 65) return StrengthLevels.MEDIUM;
+            else if(distance < 10) return StrengthLevels.CLOSED;
         }
-        if(distance < 45){
-            shootButton.setEnabled(true);
-        }
-        if(distance < 65){
-            missileOperationButton.setEnabled(true);
-        }
-
-        //System.out.println("calling as not Null");
+        return StrengthLevels.LOW;
     }
+
+    void attackButtonActivator(boolean noNearestEnemyPanelB,boolean followButtonB,boolean shootButtonB, boolean missileOperationButtonB ){
+        noNearestEnemyPanel.setVisible(noNearestEnemyPanelB);
+        followButton.setEnabled(followButtonB);
+        shootButton.setEnabled(shootButtonB); 
+        missileOperationButton.setEnabled(missileOperationButtonB);
+    }
+
+    public void updateNearestEnemyDetails(EnemyMapUnit nearestEnemyMapUnit , int distance) {
+        StrengthLevels strength  = getStrengthLevels(nearestEnemyMapUnit, distance);
+
+        switch (strength) {
+            case LOW:
+                attackButtonActivator(true, false, false,false);
+                break;
+                case MEDIUM:
+                attackButtonActivator(false, false, false,true);
+                break;
+                case HIGH:
+                attackButtonActivator(false, true, false,true);
+                break;
+                case STRONG:
+                attackButtonActivator(false, true, true,true);
+                break;
+                case CLOSED:
+                attackButtonActivator(false, true, true,true);
+                break;
+           default:
+           attackButtonActivator(true, false, false,false);
+           break;
+        }
+        this.unitDetail.updateDetails(greenUnit);
+        //System.out.println(strength);
+        
     revalidate();
     this.repaint();
     }
@@ -234,5 +267,11 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
     @Override
     public GreenUnitType getGreenUnitType() {
         return greenUnit.getGreenUnitType();
+    }
+
+
+    @Override
+    public DefenseLabel getNoMessageLabel() {
+        return noMessageLabel;
     }
 }

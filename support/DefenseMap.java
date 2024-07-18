@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import javax.swing.JPanel;
 
+import UIWindows.MainController;
 import intefaces.MapMoveable;
 
 public class DefenseMap extends JPanel implements Runnable {
@@ -12,6 +13,7 @@ public class DefenseMap extends JPanel implements Runnable {
     Stack<MapMoveable> units = new Stack<>();
     GreenSelectorInMap unitSelector;
     GreenUnit selectedGreenUnit;
+   // MainController controller = MainController.getMainController();
     
     private static DefenseMap map = null;
     private DefenseMap() {
@@ -47,6 +49,9 @@ public class DefenseMap extends JPanel implements Runnable {
        try {
         for (MapMoveable mapUnit : units){
             int size =(int) (mapUnit.getIconHeight()/4)+1;
+            if(mapUnit == MainController.getMainController().getCurrentGreenMapUnit()){
+                MainController.getMainController().getUnitDetail().updateDetails((GreenUnit)mapUnit);
+            }
             g.drawImage(mapUnit.getImage(), mapUnit.getX(), mapUnit.getY(), size,size , this);
         }
        } catch (Exception e) {

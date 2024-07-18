@@ -8,12 +8,14 @@ import javax.swing.JTextArea;
 import MainClass.DefenseSystem;
 import UIWindows.MessageSender;
 import enums.GreenUnitType;
+import support.DefenseLabel;
 
 public interface MsgReceivable {
     JTextArea getMsgDisplayArea();
     MessageSender getMessageSender();
     String getSenderName();
     GreenUnitType getGreenUnitType();
+    DefenseLabel getNoMessageLabel();
 
     default void sendMessage(MsgReceivable thisUnit,MsgReceivable[] selectedMsgReceivables ){
         MessageSender msgSender =  thisUnit.getMessageSender();
@@ -22,17 +24,18 @@ public interface MsgReceivable {
     };
    
     default void receiveMessage(MsgReceivable sender, JTextArea text){
-       if( text.getText().isEmpty()){
-        JOptionPane.showMessageDialog(null, "Message Cannot Be Empty !", "Empty Message !", JOptionPane.ERROR_MESSAGE);       
-       }
+       
        JTextArea msgDisplayArea = getMsgDisplayArea();
+       getNoMessageLabel().setVisible(false);
        //msgDisplayArea.setFont(DefenseSystem.monoDefenseFont);
-       msgDisplayArea.setText(msgDisplayArea.getText() + "\n" + String.format("%-17s :  %s",sender.getSenderName(), text.getText()));
+       if(msgDisplayArea.getText().length() == 0) msgDisplayArea.setText(String.format("%-19s :  %s",sender.getSenderName(), text.getText()));
+       else msgDisplayArea.setText(msgDisplayArea.getText() + "\n" + String.format("%-19s :  %s",sender.getSenderName(), text.getText()));
 
-       text.setText("");
-       JOptionPane.showMessageDialog(null, "Your Message Successfully Sent !", "Message sent !", JOptionPane.INFORMATION_MESSAGE);
-                
+              
     };
+
+
+
 
 
 

@@ -3,6 +3,8 @@ package support;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import UIWindows.MainController;
+
 public class EnemyInstantiateObj implements Runnable {
     
     Thread instantiateThread = new Thread(this);
@@ -28,7 +30,9 @@ public class EnemyInstantiateObj implements Runnable {
     public void run() {
         
             try {
-                Thread.sleep(200);
+                Thread.sleep(1000);
+                //MainController.getMainController().scanArea();
+               
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -36,8 +40,9 @@ public class EnemyInstantiateObj implements Runnable {
         while (true) {
             try {
                 EnemyMapUnit enemy = getNewEnemy();
+                Thread.sleep(10000);
                 map.addUnitsToMap(enemy);
-                Thread.sleep(5000);
+                MainController.getMainController().setEnemyDetectedLabelActive();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

@@ -5,6 +5,8 @@ import MainClass.DefenseSystem;
 import enums.GreenUnitType;
 import intefaces.MsgReceivable;
 import support.*;
+import support.unitDetail.UnitDetail;
+
 import java.awt.*;
 import java.util.Arrays;
 
@@ -51,6 +53,13 @@ public class MainController extends JFrame implements MsgReceivable {
     private MessageSender massageSender;
     private JScrollPane msgScroller;
     private JTextArea msgTextArea;
+    private DefenseLabel noMessageLabel;
+    private UnitDetail unitDetail;
+    
+
+
+    private EnemyInstantiateObj enemySpawner;
+
     
     private static MainController mainController = null;
 
@@ -63,15 +72,18 @@ public class MainController extends JFrame implements MsgReceivable {
         initComponents();
         setResizable(false);
         setVisible(true);
-        EnemyInstantiateObj.getEnemyInstantiate();
         
     }
 
+    public UnitDetail getUnitDetail() {
+        return unitDetail;
+    }
 
     public static MainController getMainController(){
         if(mainController == null) mainController = new MainController();
         return mainController;
     }
+
 
     void initComponents(){
         setLayout(null);
@@ -208,6 +220,18 @@ public class MainController extends JFrame implements MsgReceivable {
        msgTextArea.setFont(DefenseSystem.defenseFont);
        msgTextArea.setForeground(DefenseSystem.PrimaryfontColor);
        msgScroller.setViewportView(msgTextArea);
+
+
+
+       noMessageLabel = new DefenseLabel("- No Messages To Show -", 13);
+       getContentPane().add(noMessageLabel);
+       noMessageLabel.setBounds(690,417,313,42);
+
+
+       unitDetail = new UnitDetail();
+       unitDetail.setBounds(623, 60,319,241);
+       getContentPane().add(unitDetail);
+       
     }
 
     private void areaClearMessage() {
@@ -220,7 +244,7 @@ public class MainController extends JFrame implements MsgReceivable {
     }
 
 
-    public GreenUnit getMapUnit() {
+    public GreenUnit getCurrentGreenMapUnit() {
         return mapUnit;
     }
 
@@ -228,44 +252,49 @@ public class MainController extends JFrame implements MsgReceivable {
     public void setMapUnit(GreenUnit unit) {
         this.mapUnit = unit;
     }
-    void scanArea(){
-        areaClearedStatus.setBackgroundImage(new ImageIcon("images/clearStatus-Detected.png"));
+    public void scanArea(){
         System.out.println("area Scanned");
         middlePanel.repaint();
+        enemySpawner = EnemyInstantiateObj.getEnemyInstantiate();
         areaClearedStatus.repaint();
         radarRotator.setVisible(true);
+        
     }
-    void deployHeli(){
+
+    public void setEnemyDetectedLabelActive(){
+        areaClearedStatus.setBackgroundImage(new ImageIcon("images/clearStatus-Detected.png"));
+    }
+    private void deployHeli(){
         System.out.println("deployHeli");
         SelectionButton heli = new SelectionButton(GreenUnitType.Helicopter , String.format(" %02d", ++heliNum));
         selectionButtonPanel.add(heli); 
         selectionButtonPanel.revalidate();
         selectionButtonPanel.repaint();
     }
-    void deployTank(){
+    private void deployTank(){
         System.out.println("deployTank");
         SelectionButton tank = new SelectionButton(GreenUnitType.Tank , String.format(" %02d", ++tankNum));
         selectionButtonPanel.add(tank); 
         selectionButtonPanel.revalidate();
         selectionButtonPanel.repaint();
     }
-    void deploySub(){
+    private void deploySub(){
         System.out.println("deploySub");
         SelectionButton sub = new SelectionButton(GreenUnitType.Submarine , String.format(" %02d", ++tankNum));
         selectionButtonPanel.add(sub); 
         selectionButtonPanel.revalidate();
         selectionButtonPanel.repaint();
     }
-    void callBack(){
+    private void callBack(){
         this.mapUnit.movePosition(this.mapUnit.getInitialPosition());
     }
-    void sendMessageAll(){
+    private void sendMessageAll(){
         messageFrom.setText("Tank 01");
         messageBody.setText("send troops to the west, we are ready to attack");
         //System.out.println("send message to all units ");
     }
 
-    void setPosition(){
+    private void setPosition(){
         if(this.mapUnit != null && this.mapUnit.getUnitWindow().getPositionChangePermission()){
         int yValue = YSlider.getMaximum() - YSlider.getValue();
         if(this.mapUnit != null)mapUnit.movePosition(new Position(XSlider.getValue(), yValue));}
@@ -313,6 +342,12 @@ public class MainController extends JFrame implements MsgReceivable {
     @Override
     public GreenUnitType getGreenUnitType() {
         return unitType;
+    }
+
+
+    @Override
+    public DefenseLabel getNoMessageLabel() {
+        return noMessageLabel;
     }
 
 

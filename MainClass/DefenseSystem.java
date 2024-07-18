@@ -17,7 +17,7 @@ public class DefenseSystem {
     public final static Position NavyBasePosition       = new Position (262,175);
     public final static Position AirForceBasePosition   = new Position (331, 261);
     public final static Font defenseFont                = new Font("" , 1, 12);
-    public final static Font monoDefenseFont                = FontCreator.create(new File("./font/Outfit-VariableFont_wght.ttf"));
+    public final static Font monoDefenseFont            = FontCreator.create(new File("./font/Outfit-VariableFont_wght.ttf"));
     public static void main(String[] args) {
         MainController.getMainController();        
     }

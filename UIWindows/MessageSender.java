@@ -1,6 +1,5 @@
 package UIWindows;
 
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import java.util.Stack;
@@ -11,7 +10,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import javax.swing.plaf.OptionPaneUI;
 
 import MainClass.DefenseSystem;
 import intefaces.MsgReceivable;
@@ -43,7 +41,7 @@ public class MessageSender extends JFrame {
         setLayout(null);
         allCheckBoxPanel = new JPanel(new GridLayout(2, 2, 5, 0));
         getContentPane().add(allCheckBoxPanel);
-        allCheckBoxPanel.setBounds(getWidth()/7, 90, getWidth()-getWidth()/5, 50);
+        allCheckBoxPanel.setBounds(getWidth()/7, 65, getWidth()-getWidth()/5, 50);
         allCheckBoxPanel.setOpaque(false);
 
 
@@ -59,16 +57,26 @@ public class MessageSender extends JFrame {
         messageTextArea.setFont(DefenseSystem.defenseFont);
         messageTextArea.setForeground(DefenseSystem.PrimaryfontColor);
         messageTextArea.setOpaque(false);
+        messageTextArea.setLineWrap(true);
+        
 
     }
 
     private void sendMessage() {
+        if(messageTextArea.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Message Cannot Be Empty !", "Empty Message !", JOptionPane.ERROR_MESSAGE);       
+           return;
+        }
       Stack<DefenseCheckHolder> holders = new DefenseCheckHolder().getAllHolders();
     
       for (DefenseCheckHolder defenseCheckHolder : holders) {
         if(defenseCheckHolder.checkBox.isSelected() == true)
             defenseCheckHolder.msgReceivable.receiveMessage(sender,messageTextArea);
       }
+
+       messageTextArea.setText("");
+       JOptionPane.showMessageDialog(null, "Your Message Successfully Sent !", "Message sent !", JOptionPane.INFORMATION_MESSAGE);
+        
     }
 
     public void setMsgReceivables(MsgReceivable sender, MsgReceivable[] selectedMsgReceivables) {
@@ -85,8 +93,9 @@ public class MessageSender extends JFrame {
         // setting this message sender window header 
         DefenseLabel header = new DefenseLabel("sending Message From : " + sender.getSenderName(), 16);
         getContentPane().add(header);
-        header.setBounds(0, 0, getWidth(), 60);
+        header.setBounds(0, 0, getWidth(), 48);
         header.setHorizontalAlignment(SwingConstants.CENTER);
+        messageTextArea.requestFocusInWindow();
     }
 
 
