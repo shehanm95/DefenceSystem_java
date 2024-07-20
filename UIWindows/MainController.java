@@ -43,10 +43,8 @@ public class MainController extends JFrame implements MsgReceivable {
     
     JButton sendMessageToAllButton = new ImageButton("images/SendMessageToAll.png",1);
     
-    BackgroundPanel receivedMessagePanel = new BackgroundPanel(new ImageIcon("images/ReceivedMessagesBack.png"), 0);
-    DefenseLabel messageFrom = new DefenseLabel("No Received Messages",13);
-    JustifiedLabel messageBody = new JustifiedLabel("Message Body will Display here.",94);
-
+    BackgroundPanel receivedMessagePanel = new BackgroundPanel(new ImageIcon("images/ReceivedMessagesBack.png"),0);
+    
     private GreenUnit mapUnit;
     private MyCheckBox clearAreaCheckBox;
     private boolean areaCleared;
@@ -56,9 +54,17 @@ public class MainController extends JFrame implements MsgReceivable {
     private DefenseLabel noMessageLabel;
     private UnitDetail unitDetail;
     
-
-
+    
+    
     private EnemyInstantiateObj enemySpawner;
+    
+    private DefenseLabel totalSoldierCountLabel;
+    private DefenseLabel totalEnergyCountLabel;
+    private DefenseLabel totalAmmoCountLabel;
+    private int totalAmmoCount;
+    private int totalEnergyCount;
+    private int totalSoldierCount;
+    private final int MAX_SELECTION_BUTTON_LIMIT = 4;
 
     
     private static MainController mainController = null;
@@ -72,6 +78,7 @@ public class MainController extends JFrame implements MsgReceivable {
         initComponents();
         setResizable(false);
         setVisible(true);
+        disableSliders();
         
     }
 
@@ -184,21 +191,25 @@ public class MainController extends JFrame implements MsgReceivable {
             }
         });
         middlePanel.add(receivedMessagePanel);
+        receivedMessagePanel.setBounds(10, 10, 128, 129);
 
         receivedMessagePanel.setLayout(null);
-        messageFrom.setFont(new Font("",1,14));
-        messageBody.setFont(new Font("",1,12));
+
+        totalSoldierCountLabel = new DefenseLabel("00/80", 13,DefenseSystem.backgroundCor);
+        totalSoldierCountLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        totalSoldierCountLabel.setBounds(0,29,128,20);
+
+        totalEnergyCountLabel = new DefenseLabel("000/400", 13,DefenseSystem.backgroundCor);
+        totalEnergyCountLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        totalEnergyCountLabel.setBounds(0,64,128,20);
+
+        totalAmmoCountLabel = new DefenseLabel("0000/8000", 13,DefenseSystem.backgroundCor);
+        totalAmmoCountLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        totalAmmoCountLabel.setBounds(0,99,128,20);
         
-        
-        messageFrom.setForeground(DefenseSystem.PrimaryfontColor);
-        messageFrom.setHorizontalAlignment(SwingConstants.CENTER);
-        messageBody.setForeground(DefenseSystem.PrimaryfontColor);
-        messageBody.setBackground(Color.GRAY);
-        messageFrom.setBounds(0,4,128,20);
-        messageBody.setBounds(5,44,128,60);
-        
-        receivedMessagePanel.add(messageFrom);
-        receivedMessagePanel.add(messageBody);
+        receivedMessagePanel.add(totalSoldierCountLabel);
+        receivedMessagePanel.add(totalEnergyCountLabel);
+        receivedMessagePanel.add(totalAmmoCountLabel);
 
         getContentPane().add(radarRotator);
         radarRotator.setOpaque(false);
@@ -251,6 +262,8 @@ public class MainController extends JFrame implements MsgReceivable {
 
     public void setMapUnit(GreenUnit unit) {
         this.mapUnit = unit;
+        map.setGreenSelectorPosition(unit);
+        enableSliders();
     }
     public void scanArea(){
         System.out.println("area Scanned");
@@ -265,6 +278,7 @@ public class MainController extends JFrame implements MsgReceivable {
         areaClearedStatus.setBackgroundImage(new ImageIcon("images/clearStatus-Detected.png"));
     }
     private void deployHeli(){
+        if(!isCanAdd()) return;
         System.out.println("deployHeli");
         SelectionButton heli = new SelectionButton(GreenUnitType.Helicopter , String.format(" %02d", ++heliNum));
         selectionButtonPanel.add(heli); 
@@ -272,6 +286,7 @@ public class MainController extends JFrame implements MsgReceivable {
         selectionButtonPanel.repaint();
     }
     private void deployTank(){
+        if(!isCanAdd()) return;
         System.out.println("deployTank");
         SelectionButton tank = new SelectionButton(GreenUnitType.Tank , String.format(" %02d", ++tankNum));
         selectionButtonPanel.add(tank); 
@@ -279,20 +294,35 @@ public class MainController extends JFrame implements MsgReceivable {
         selectionButtonPanel.repaint();
     }
     private void deploySub(){
+        if(!isCanAdd()) return;
         System.out.println("deploySub");
         SelectionButton sub = new SelectionButton(GreenUnitType.Submarine , String.format(" %02d", ++tankNum));
         selectionButtonPanel.add(sub); 
         selectionButtonPanel.revalidate();
         selectionButtonPanel.repaint();
     }
+    private boolean isCanAdd() {
+        for (Component comp : selectionButtonPanel.getComponents()) {
+            SelectionButton button = (SelectionButton) comp;
+            if(button.isPerished()){
+                button.closeUnitWindow();
+                selectionButtonPanel.remove(comp);
+
+            }
+        }
+        if(selectionButtonPanel.getComponentCount() < MAX_SELECTION_BUTTON_LIMIT) return true;
+        else{
+            JOptionPane.showMessageDialog(this, "You can maintain up to four active units simultaneously.", "Max deployment limit reached !",JOptionPane.ERROR_MESSAGE );
+            return false;
+        } 
+    }
+
     private void callBack(){
-        this.mapUnit.movePosition(this.mapUnit.getInitialPosition());
+        if(mapUnit != null){
+            this.mapUnit.movePosition(this.mapUnit.getInitialPosition());
+        }
     }
-    private void sendMessageAll(){
-        messageFrom.setText("Tank 01");
-        messageBody.setText("send troops to the west, we are ready to attack");
-        //System.out.println("send message to all units ");
-    }
+    
 
     private void setPosition(){
         if(this.mapUnit != null && this.mapUnit.getUnitWindow().getPositionChangePermission()){
@@ -350,6 +380,37 @@ public class MainController extends JFrame implements MsgReceivable {
         return noMessageLabel;
     }
 
+    public void setCurrantGreenMapUnitDeath() {
+        this.mapUnit = null;
+        map.setGreenSelectorPosition(null);
+        disableSliders();
+    }
 
+    private void disableSliders() {
+        XSlider.setEnabled(false);
+        YSlider.setEnabled(false);
+    }
+    private void enableSliders() {
+        XSlider.setEnabled(true);
+        YSlider.setEnabled(true);
+    }
+
+    public void updateFieldStatus() {
+
+        Component[] buttons = selectionButtonPanel.getComponents();
+        totalAmmoCount = 0;
+        totalEnergyCount = 0;
+        totalSoldierCount = 0;
+        for (Component component : buttons) {
+            GreenUnit greenUnit = ((SelectionButton) component).getGreenUnit();
+                totalAmmoCount += greenUnit.getAmmoCount();                        
+                totalEnergyCount += greenUnit.getEnergy();                      
+                totalSoldierCount += greenUnit.getSoldierCountStrengthCount();  
+        }
+
+        totalAmmoCountLabel.setText(String.format("%04d/8000", totalAmmoCount));
+        totalEnergyCountLabel.setText(String.format("%02d/400", totalEnergyCount));
+        totalSoldierCountLabel.setText(String.format("%02d/80", totalSoldierCount));
+    }
 
 }

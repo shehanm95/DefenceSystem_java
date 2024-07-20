@@ -3,6 +3,7 @@ package support;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class ProgressBar extends JPanel {
@@ -17,6 +18,15 @@ public class ProgressBar extends JPanel {
         this.height = height;  
         this.color = color;          
         this.maxValue =maxValue;  
+        setOpaque(false);        
+    }
+    public ProgressBar(int maxValue, int width, int height ,Color color , Color borderColor , int borderThick){
+        this.width = width;        
+        this.maxWidth = width;        
+        this.height = height;  
+        this.color = color;          
+        this.maxValue =maxValue;
+        this.setBorder(BorderFactory.createLineBorder(borderColor, borderThick));  
         setOpaque(false);        
     }
 

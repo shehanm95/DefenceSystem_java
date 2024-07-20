@@ -120,6 +120,11 @@ public class MessageSender extends JFrame {
     }
 
 
+    public static void autoMessage(MsgReceivable sender , String text){
+        MainController.getMainController().receiveMessage(sender,new JTextArea(text));
+    }
+
+
 
     
 

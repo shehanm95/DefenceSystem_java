@@ -30,7 +30,7 @@ public class EnemyInstantiateObj implements Runnable {
     public void run() {
         
             try {
-                Thread.sleep(1000);
+                Thread.sleep(12);
                 //MainController.getMainController().scanArea();
                
             } catch (InterruptedException e) {
@@ -40,8 +40,8 @@ public class EnemyInstantiateObj implements Runnable {
         while (true) {
             try {
                 EnemyMapUnit enemy = getNewEnemy();
-                Thread.sleep(10000);
                 map.addUnitsToMap(enemy);
+                Thread.sleep(10000);
                 MainController.getMainController().setEnemyDetectedLabelActive();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block

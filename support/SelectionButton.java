@@ -2,8 +2,8 @@ package support;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Panel;
 import java.awt.event.MouseEvent;
+import java.io.PrintStream;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -13,6 +13,7 @@ import javax.swing.event.MouseInputListener;
 import MainClass.DefenseSystem;
 import UIWindows.MainController;
 import UIWindows.UnitWindow;
+import enums.GreenUnitStatus;
 import enums.GreenUnitType;
 
 public class SelectionButton extends BackgroundPanel implements MouseInputListener {
@@ -28,6 +29,8 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     MainController mainController = MainController.getMainController();
     private DefenseMap map = DefenseMap.getDefenseMap();
     String unitNum = "";
+    private ImageIcon inPatrolImage;
+    private ImageIcon perishedImage;
     
     
     
@@ -40,19 +43,22 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         initComponents(type);
         addMouseListener(this);
         greenUnit = getGreenUnit();
-        unitWindow =new UnitWindow(greenUnit, unitNum);
+        unitWindow =new UnitWindow(this, greenUnit, unitNum);
         mainController.setMapUnit( greenUnit);
         map.setGreenSelectorPosition(greenUnit);
         
     }
 
+    
+
     void initComponents(GreenUnitType type){
         setLayout(null);
 
-        ImageIcon img = new ImageIcon("./images/"+type.toString()+".png");
-        unitImage = new BackgroundPanel(img, 0);
+        inPatrolImage = new ImageIcon("./images/"+type.toString()+".png");
+        perishedImage = new ImageIcon("./images/Red"+type.toString()+".png");
+        unitImage = new BackgroundPanel(inPatrolImage, 0);
         unitImage.setOpaque(false);
-        unitImage.setBounds(7, 5, img.getIconWidth(), img.getIconHeight());
+        unitImage.setBounds(7, 5, inPatrolImage.getIconWidth(), inPatrolImage.getIconHeight());
         add(unitImage);
 
         unitStatus.setText("In Patrol");
@@ -67,18 +73,16 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         add(energyBar);
 
 
-        strengthBar = new ProgressBar(100, 60, 4, DefenseSystem.PrimaryfontColor);
+        strengthBar = new ProgressBar(20, 60, 4, DefenseSystem.PrimaryfontColor);
         strengthBar.setBounds(20, 86, 60, 4);
         add(strengthBar);
     }
     int health = 100;
+    private boolean perished = false;
     @Override
     public void mouseClicked(MouseEvent e) {
-        // TODO Auto-generated method stub
        System.out.println("Clicked on button");
         unitWindow.setVisible(true);
-        energyBar.changeValue(health);
-        health -=20;
         System.out.println(health);
         greenUnit = getGreenUnit();
         mainController.setMapUnit(greenUnit );
@@ -97,6 +101,7 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         return greenUnit;
     }
 
+
     @Override
     public void mousePressed(MouseEvent e) {}
 
@@ -114,5 +119,50 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
 
     @Override
     public void mouseMoved(MouseEvent e) {}
+
+
+
+    public void setStatus(GreenUnitStatus unitStatus) {
+
+        switch (unitStatus) {
+            case IN_PETROL:
+                    this.unitStatus.setText(unitStatus.toString());
+                    this.unitStatus.setForeground(DefenseSystem.PrimaryfontColor);
+                    break;
+            case IN_FIGHT:
+                    this.unitStatus.setText(unitStatus.toString());
+                    this.unitStatus.setForeground(DefenseSystem.darkRed);
+                    break;
+            case PERISHED:
+                    this.unitStatus.setText("");
+                    unitImage.setBackgroundImage(perishedImage);
+                    this.setBackgroundImage(new ImageIcon("./images/Perished.png"));
+                    perished = true;
+                    break;
+                    
+                    default:
+                    this.unitStatus.setText(unitStatus.toString());
+                    this.unitStatus.setForeground(DefenseSystem.PrimaryfontColor);
+                break;
+        }
+        
+
+    }
+
+
+
+    public void updateBars(int energy, int soldierCount) {
+        energyBar.changeValue(energy);
+        strengthBar.changeValue(soldierCount);
+    }
+
+
+
+    public boolean isPerished() {
+        return perished;
+    }
+    public void closeUnitWindow() {
+        unitWindow.dispose();
+    }
 }
 

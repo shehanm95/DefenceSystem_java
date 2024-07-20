@@ -3,6 +3,8 @@ package support;
 import java.awt.Image;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
+
 import javax.swing.ImageIcon;
 
 public class MapUnit {
@@ -11,6 +13,16 @@ public class MapUnit {
     Queue<Position> positions = new LinkedList<>();
     int speed = 80;
     int steps = 80;
+    private int energy = 100;
+    private boolean death;
+    private ImageIcon deathIcon;
+
+
+    public void setDeathIcon(ImageIcon deathIcon) {
+        this.deathIcon = deathIcon;
+    }
+
+    public static  Random random = new Random();
 
     public MapUnit(int x, int y, ImageIcon icon) {
         this.x = x;
@@ -45,6 +57,7 @@ public class MapUnit {
   
 
     public void movePosition(Position newPosition){
+        if (death) return;
         positions.clear();
         //positions.add(this.getPosition());
         int distance = calculateDistance(newPosition);
@@ -128,6 +141,30 @@ public class MapUnit {
     public Image getImage() {return icon.getImage();}
     public int getX() {return this.x;}
     public int getY() {return this.y;}
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void reduceEnergy(int reduceAmount) {
+        if(energy - reduceAmount > 0)
+        energy -=reduceAmount;
+        else {
+            energy = 0;
+            death = true;
+            icon  = deathIcon;
+            positions.clear();
+        }
+    }
+
+    public void stopHere(){
+        positions.clear();
+    }
+
+    public boolean isDeath(){
+        return death;
+    }
+
 
     
 

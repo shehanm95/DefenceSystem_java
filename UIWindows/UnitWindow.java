@@ -1,16 +1,19 @@
 package UIWindows;
 
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import MainClass.DefenseSystem;
+import enums.GreenUnitStatus;
 import enums.GreenUnitType;
-import enums.JustifiedLabelAlignment;
 import enums.StrengthLevels;
 import intefaces.MsgReceivable;
 import support.BackgroundAdder;
@@ -18,8 +21,10 @@ import support.DefenseLabel;
 import support.EnemyMapUnit;
 import support.GreenUnit;
 import support.ImageButton;
-import support.JustifiedLabel;
+import support.MapUnit;
 import support.MyCheckBox;
+import support.ProgressBar;
+import support.SelectionButton;
 import support.SuperDefense;
 import support.unitDetail.UnitDetail;
 
@@ -43,12 +48,24 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
     private JTextArea msgTextArea;
     private DefenseLabel noMessageLabel;
     private UnitDetail unitDetail;
+    private JPanel enemydetailsDisplayArea;
+    private JTextArea enemyDetailsText;
+    private JTextArea unitDetailsText;
+    private ProgressBar enemyHealthBar;
+    private EnemyMapUnit nearestEnemyUnit;
+    private Random random = new Random();
+    private EnemyMapUnit lastMessageEnemy;
+    private boolean isButtonsDeactivated;
+    private String enemyDetailNote;
+    private String finalNote;
+    private SelectionButton selectionButton;
 
 
 
 
-    public UnitWindow(GreenUnit greenUnit , String unitNumber){
+    public UnitWindow(SelectionButton selectionButton, GreenUnit greenUnit , String unitNumber){
         this.greenUnit = greenUnit;
+        this.selectionButton = selectionButton;
         greenUnit.setUnitWindow(this);
         unitName = greenUnit.getGreenUnitType().toString() + unitNumber;
         setTitle(unitName);
@@ -102,6 +119,8 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
         noNearestEnemyPanel.setOpaque(false);
         noNearestEnemyPanel.add(noEnemyLabel1);
         noNearestEnemyPanel.add(noEnemyLabel2);
+        noNearestEnemyPanel.setVisible(false);
+        
 
         add(buttonPanelEnemyDetails1);
         buttonPanelEnemyDetails1.setBounds(21,372,400,30);
@@ -154,6 +173,52 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
         unitDetail.setBounds(417, 15, 319,241);
         getContentPane().add(unitDetail);
 
+
+        enemydetailsDisplayArea = new JPanel();
+        enemydetailsDisplayArea.setLayout(null);
+        add(enemydetailsDisplayArea);
+        enemydetailsDisplayArea.setBounds(37, 220, 359, 148);
+
+        DefenseLabel observerDetectionLabel = new DefenseLabel("Observer Detections", 15, DefenseSystem.darkRed);
+        observerDetectionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        observerDetectionLabel.setBounds(0, 0, enemydetailsDisplayArea.getWidth(), 20);
+        enemydetailsDisplayArea.add(observerDetectionLabel);
+        enemydetailsDisplayArea.setOpaque(false);
+        enemydetailsDisplayArea.setVisible(false);
+
+
+        enemyDetailsText = new JTextArea("Enemy Name     : Enemy Tank 01\nDistance          : 28KM\nEnemy Life        : 72%\n\nEnemy Tank 01 detected as nearest Enemy\nTo this helicopter 01".toUpperCase());
+        enemyDetailsText.setEditable(false); 
+        enemyDetailsText.setOpaque(false);
+        enemyDetailsText.setFont(new Font("" , 1 , 13));
+        enemyDetailsText.setForeground(DefenseSystem.darkRed);
+        enemyDetailsText.setWrapStyleWord(true);
+        enemyDetailsText.setLineWrap(true);
+        enemyDetailsText.setBounds(0, 26, enemydetailsDisplayArea.getWidth(), 120);
+        enemydetailsDisplayArea.add(enemyDetailsText);
+
+
+        enemyHealthBar = new ProgressBar(100, 136, 12, DefenseSystem.darkRed , DefenseSystem.darkRed, 1);
+        enemyHealthBar.setBounds(148, 65, 136,12);
+        enemydetailsDisplayArea.add(enemyHealthBar);
+        enemyHealthBar.changeValue(40);
+
+        DefenseLabel unitDetailsLabel = new DefenseLabel("<html><u>UNIT DETAILS.</u></html>", 15);
+        unitDetailsLabel.setBounds(425, 268, 200, 15);
+        add(unitDetailsLabel);
+
+
+        unitDetailsText = new JTextArea("Enemy Name    : our unit Name\nDistance          : 28KM\nEnemy Life        : 72%\n\nEnemy Tank 01 detected as nearest Enemy\nTo this helicopter 01".toUpperCase());
+        unitDetailsText.setEditable(false); 
+        unitDetailsText.setOpaque(false);
+        unitDetailsText.setFont(new Font("" , 1 , 13));
+        unitDetailsText.setForeground(DefenseSystem.PrimaryfontColor);
+        unitDetailsText.setWrapStyleWord(true);
+        unitDetailsText.setLineWrap(true);
+        unitDetailsText.setBounds(425, 290, 200, 120);
+        add(unitDetailsText);
+
+
     }
 
     private void positionChangeAllow() {
@@ -173,39 +238,70 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
             if(distance < 45) return StrengthLevels.STRONG;
             else if(distance < 60) return StrengthLevels.HIGH;
             else if(distance < 65) return StrengthLevels.MEDIUM;
-            else if(distance < 10) return StrengthLevels.CLOSED;
+            else if(distance < 20) return StrengthLevels.CLOSED;
         }
         return StrengthLevels.LOW;
     }
 
     void attackButtonActivator(boolean noNearestEnemyPanelB,boolean followButtonB,boolean shootButtonB, boolean missileOperationButtonB ){
         noNearestEnemyPanel.setVisible(noNearestEnemyPanelB);
+        enemydetailsDisplayArea.setVisible(!noNearestEnemyPanelB);
         followButton.setEnabled(followButtonB);
         shootButton.setEnabled(shootButtonB); 
         missileOperationButton.setEnabled(missileOperationButtonB);
     }
 
     public void updateNearestEnemyDetails(EnemyMapUnit nearestEnemyMapUnit , int distance) {
-        StrengthLevels strength  = getStrengthLevels(nearestEnemyMapUnit, distance);
+        if(greenUnit.isDeath()){
+            if(!isButtonsDeactivated){
+                attackButtonActivator(false, false, false,false);
+                finalNote = this.unitName.toUpperCase() + " IS KILLED BY " + nearestEnemyMapUnit.getEnemyName().toUpperCase();
+                MessageSender.autoMessage(this, "IS KILLED BY " + nearestEnemyUnit.getEnemyName().toUpperCase());
+                enemyDetailsText.setText(enemyDetailNote+ "\n\n"+finalNote+"".toUpperCase());
+                stopHereButton.setEnabled(false);
+                isButtonsDeactivated = true;
+                selectionButton.setStatus(GreenUnitStatus.PERISHED);
+                if(this.greenUnit == controller.getCurrentGreenMapUnit()){
+                    controller.setCurrantGreenMapUnitDeath();
+                }
 
+                selectionButton.updateBars(this.greenUnit.getEnergy(), this.greenUnit.getSoldierCountStrengthCount());
+                
+            };
+            //System.out.println("death");
+            return;
+
+        } 
+        StrengthLevels strength  = getStrengthLevels(nearestEnemyMapUnit, distance);
+        if(nearestEnemyMapUnit != null) {
+            setEnemyDetails(nearestEnemyMapUnit , distance);
+            nearestEnemyUnit = nearestEnemyMapUnit;
+        }
+        
         switch (strength) {
             case LOW:
                 attackButtonActivator(true, false, false,false);
+                selectionButton.setStatus(GreenUnitStatus.IN_PETROL);
                 break;
                 case MEDIUM:
                 attackButtonActivator(false, false, false,true);
+                selectionButton.setStatus(GreenUnitStatus.IN_FIGHT);
                 break;
                 case HIGH:
                 attackButtonActivator(false, true, false,true);
+                //takeDamage(2);
                 break;
                 case STRONG:
                 attackButtonActivator(false, true, true,true);
+                takeDamage(1);
                 break;
                 case CLOSED:
-                attackButtonActivator(false, true, true,true);
+                attackButtonActivator(false, true, true,false);
+                takeDamage(3);
                 break;
            default:
            attackButtonActivator(true, false, false,false);
+           selectionButton.setStatus(GreenUnitStatus.IN_PETROL);
            break;
         }
         this.unitDetail.updateDetails(greenUnit);
@@ -215,6 +311,8 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
     this.repaint();
     }
 
+
+
     public void setAreaClearLabel(boolean areaCleared){
         
         if(areaCleared) areaClearStatusLabel.setText("| AREA CLEARED");
@@ -223,26 +321,31 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
         this.repaint();
     }
 
-    private Object follow() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'follow'");
+    private void follow() {
+        greenUnit.movePosition(nearestEnemyUnit.getPosition());
     }
 
 
-    private Object shoot() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'shoot'");
+    private void shoot() {
+        if(greenUnit.getAmmoCount() > 0){
+            greenUnit.reduceAmmoCount();
+            nearestEnemyUnit.reduceEnergy(6);
+        }
     }
 
 
-    private Object missileOperation() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'missileOperation'");
+    private void missileOperation() {
+        if(greenUnit.getHeavyWeaponAmmoCount() > 0){
+            greenUnit.reduceHeavyWeaponAmmoCount();
+            nearestEnemyUnit.reduceEnergy(20);
+        }else{
+            String heavyWeapon = this.greenUnit.getHeavyWeapon().toString();
+            JOptionPane.showMessageDialog(this, heavyWeapon + " are out of stock for this unit,\nPlease go to a DEFENSE BASE and refill it,", heavyWeapon + " have finished !",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private Object stopHere() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stopHere'");
+    private void stopHere() {
+        this.greenUnit.stopHere();
     }
 
     @Override
@@ -274,4 +377,37 @@ public class UnitWindow extends SuperDefense implements MsgReceivable {
     public DefenseLabel getNoMessageLabel() {
         return noMessageLabel;
     }
+
+    private void setEnemyDetails(EnemyMapUnit eUnit , int distance){
+        enemyDetailNote = "Enemy Name     : "+eUnit.getEnemyName() +"\nDistance            : "+distance+"KM\nEnemy Life        : "+eUnit.getEnergy()+"%";
+        finalNote = eUnit.getEnemyName() + " detected as nearest Enemy\nTo "+this.unitName+".";
+        enemyDetailsText.setText(enemyDetailNote+ "\n\n"+finalNote+"".toUpperCase());
+        enemyHealthBar.changeValue(eUnit.getEnergy());
+        
+    }
+
+
+
+    private void takeDamage(int damageMultiplier){
+        if(nearestEnemyUnit.isDeath()) return;
+        if(this.greenUnit.getEnergy() <= 0 ){
+            return;} 
+
+        int num =random.nextInt(4+damageMultiplier);
+        if(num < 7)
+         {
+            this.greenUnit.reduceEnergy(MapUnit.random.nextInt(6)+1);
+        }
+        else{
+            this.greenUnit.reduceEnergy(random.nextInt(10)+7+damageMultiplier);
+        }
+        if(this.nearestEnemyUnit != lastMessageEnemy){
+            MessageSender.autoMessage(this, "is attacked by " + nearestEnemyUnit.getEnemyName());
+            lastMessageEnemy = nearestEnemyUnit;
+        }
+        selectionButton.updateBars(this.greenUnit.getEnergy(), this.greenUnit.getSoldierCountStrengthCount());
+    }
+
+
+
 }

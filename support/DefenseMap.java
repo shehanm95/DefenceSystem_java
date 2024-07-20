@@ -46,16 +46,19 @@ public class DefenseMap extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-       try {
-        for (MapMoveable mapUnit : units){
+        try {
+           for (MapMoveable mapUnit : units){
             int size =(int) (mapUnit.getIconHeight()/4)+1;
             if(mapUnit == MainController.getMainController().getCurrentGreenMapUnit()){
                 MainController.getMainController().getUnitDetail().updateDetails((GreenUnit)mapUnit);
             }
+            if(mapUnit instanceof GreenUnit && !((GreenUnit)mapUnit).isDeath()){
+                MainController.getMainController().updateFieldStatus();
+            }
             g.drawImage(mapUnit.getImage(), mapUnit.getX(), mapUnit.getY(), size,size , this);
         }
        } catch (Exception e) {
-            System.out.println("Err : concurrent image rendering");
+            System.out.println("Concurrent image rendering");
        }
     }
 
@@ -86,15 +89,6 @@ public class DefenseMap extends JPanel implements Runnable {
     }
     public void addUnitsToMap(EnemyMapUnit unit){
         units.add(unit);
-    }
-    public void removeUnitsFromMap(){
-        //do necessary changes to the class and implement the method effectively
-    }
-    public void calculateDistance(MapUnit unit1, MapUnit unit2){
-        //do necessary changes to the class and implement the method effectively
-    }
-    public void moveTowards(MapUnit unit1, int positionX, int positionY){
-        //do necessary changes to the class and implement the method effectively
     }
 
 }

@@ -15,7 +15,7 @@ public class EnemyMapUnit extends MapUnit implements MapMoveable {
     private Position midPosition;
     private Position finalPosition;
     private EnemyType enemyType;
-    private static  Random random = new Random();
+    
     private static int enemyTankCount = 0, enemyShipCount = 0;
     private String enemyUnitName;
 
@@ -31,8 +31,7 @@ public class EnemyMapUnit extends MapUnit implements MapMoveable {
         getFinalPosition();
         typeCountIncrementorAndNameSetter();
         changeSpeed(100);
-       
-        
+        setDeathIcon(new ImageIcon("./images/deathEnemy.png"));
     }
 
     private void typeCountIncrementorAndNameSetter(){
@@ -121,4 +120,6 @@ public class EnemyMapUnit extends MapUnit implements MapMoveable {
       //System.out.println(iPos + " : " + enemyType.toString());
         return new PositionNType(iPos, enemyType);
     }
+
+
 }
