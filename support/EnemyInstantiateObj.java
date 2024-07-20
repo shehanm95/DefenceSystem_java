@@ -9,6 +9,8 @@ public class EnemyInstantiateObj implements Runnable {
     
     Thread instantiateThread = new Thread(this);
     DefenseMap map = DefenseMap.getDefenseMap();
+    private long spawnTime = 28000;
+    private boolean scanning;
     private static EnemyInstantiateObj obj = null;
     private EnemyInstantiateObj(){
         instantiateThread.start();
@@ -29,31 +31,51 @@ public class EnemyInstantiateObj implements Runnable {
     @Override
     public void run() {
         
-            try {
-                Thread.sleep(12);
-                //MainController.getMainController().scanArea();
-               
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        while (true) {
-            try {
-                EnemyMapUnit enemy = getNewEnemy();
-                map.addUnitsToMap(enemy);
-                Thread.sleep(10000);
-                MainController.getMainController().setEnemyDetectedLabelActive();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+      if(scanning){
+        System.out.println("entered");
+        try {
+            Thread.sleep(10000);
+            //MainController.getMainController().scanArea();
+            
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        while (true) {
+                System.out.println("entered");
+                try {
+                    EnemyMapUnit enemy = getNewEnemy();
+                    map.addUnitsToMap(enemy);
+                    Thread.sleep(getTimeToSpawn());
+                    MainController.getMainController().setEnemyDetectedLabelActive();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+      }
+    }
+
+
+    
+
+
+    private long getTimeToSpawn() {
+
+        if(spawnTime > 15000) spawnTime -= 1000;
+        return spawnTime;
     }
 
     private EnemyMapUnit getNewEnemy() {
         EnemyMapUnit enemy = new EnemyMapUnit(EnemyMapUnit.SetInitialPositionAndType());
         allEnemiesInMap.add(enemy);
         return enemy;
+    }
+
+    public void instantiate() {
+       
+        scanning = true;
+      
     }
 
 

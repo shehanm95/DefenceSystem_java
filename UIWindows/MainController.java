@@ -4,6 +4,7 @@ import javax.swing.*;
 import MainClass.DefenseSystem;
 import enums.GreenUnitType;
 import intefaces.MsgReceivable;
+import intefaces.UnitObserver;
 import support.*;
 import support.unitDetail.UnitDetail;
 
@@ -33,7 +34,6 @@ public class MainController extends JFrame implements MsgReceivable {
 
     JPanel selectionButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,4,0));
     
-    JPanel[] sectionButtons = new JPanel[4];
     
     //holds scan area , protected status
     JPanel middlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100,100));
@@ -70,11 +70,13 @@ public class MainController extends JFrame implements MsgReceivable {
     private static MainController mainController = null;
 
     private MainController(){
+        setIconImage(new ImageIcon("./images/mainController.png").getImage());
+        setTitle("Main Controller");
         BackgroundAdder.addBackground(this,new ImageIcon("images/backGround.png"),978, 588);
         // Create a custom panel with overridden paintComponent method
         // Frame settings
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
+        //setLocationRelativeTo(null); 
         initComponents();
         setResizable(false);
         setVisible(true);
@@ -218,7 +220,7 @@ public class MainController extends JFrame implements MsgReceivable {
 
        msgScroller = new JScrollPane();
        getContentPane().add(msgScroller);
-       msgScroller.setBounds(638, 348, 280, 180);
+       msgScroller.setBounds(628, 348, 300, 180);
        msgScroller.setOpaque(false);
        msgScroller.setBorder(null);
        msgScroller.getViewport().setOpaque(false);
@@ -269,6 +271,7 @@ public class MainController extends JFrame implements MsgReceivable {
         System.out.println("area Scanned");
         middlePanel.repaint();
         enemySpawner = EnemyInstantiateObj.getEnemyInstantiate();
+        enemySpawner.instantiate();
         areaClearedStatus.repaint();
         radarRotator.setVisible(true);
         
@@ -402,15 +405,34 @@ public class MainController extends JFrame implements MsgReceivable {
         totalEnergyCount = 0;
         totalSoldierCount = 0;
         for (Component component : buttons) {
-            GreenUnit greenUnit = ((SelectionButton) component).getGreenUnit();
-                totalAmmoCount += greenUnit.getAmmoCount();                        
-                totalEnergyCount += greenUnit.getEnergy();                      
-                totalSoldierCount += greenUnit.getSoldierCountStrengthCount();  
+            //GreenUnit greenUnit = ((SelectionButton) component).getGreenUnit();
+            SuperDefense unitWindow = ((SelectionButton) component).getUnitWindow();
+            UnitObserver unit = (UnitObserver) unitWindow;
+               try {
+                totalAmmoCount += unit.getAmmoCount();                        
+                totalEnergyCount += unit.getEnergy();                      
+                totalSoldierCount += unit.getSoldierCountStrengthCount(); 
+               } catch (Exception e) {
+                 System.out.println("maincontroller : cannot get unit details > " + e);
+               } 
         }
 
         totalAmmoCountLabel.setText(String.format("%04d/8000", totalAmmoCount));
         totalEnergyCountLabel.setText(String.format("%02d/400", totalEnergyCount));
         totalSoldierCountLabel.setText(String.format("%02d/80", totalSoldierCount));
+    }
+
+    public int getSelectionButtonHierarchy(SelectionButton selectionButton) {
+        int rank = 0;
+        for (Component comp : selectionButtonPanel.getComponents()) {
+            if((SelectionButton) comp == selectionButton){
+                return rank;
+            }
+            rank++;
+            
+        }
+        return rank;
+        
     }
 
 }

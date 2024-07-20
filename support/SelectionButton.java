@@ -11,13 +11,15 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.MouseInputListener;
 
 import MainClass.DefenseSystem;
+import UIWindows.HelicopterWindow;
 import UIWindows.MainController;
-import UIWindows.UnitWindow;
+import UIWindows.SubmarineWindow;
+import UIWindows.TankWindow;
 import enums.GreenUnitStatus;
 import enums.GreenUnitType;
 
 public class SelectionButton extends BackgroundPanel implements MouseInputListener {
-    private UnitWindow unitWindow;
+    private SuperDefense unitWindow;
     private BackgroundPanel unitImage;
     private JLabel unitStatus = new JustifiedLabel("getToolTipText()", 70);
 
@@ -43,7 +45,26 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         initComponents(type);
         addMouseListener(this);
         greenUnit = getGreenUnit();
-        unitWindow =new UnitWindow(this, greenUnit, unitNum);
+        
+
+        switch (type) {
+            case Helicopter:
+                unitWindow =new HelicopterWindow(this, greenUnit, unitNum);
+                setWindowLocation();
+                break;
+
+                case Submarine:
+                unitWindow =new SubmarineWindow(this, greenUnit, unitNum);
+                setWindowLocation();
+                
+                break;
+                case Tank:
+                unitWindow =new TankWindow(this, greenUnit, unitNum);
+                setWindowLocation();
+                
+                break;
+                
+        }
         mainController.setMapUnit( greenUnit);
         map.setGreenSelectorPosition(greenUnit);
         
@@ -82,6 +103,7 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     @Override
     public void mouseClicked(MouseEvent e) {
        System.out.println("Clicked on button");
+        setWindowLocation();
         unitWindow.setVisible(true);
         System.out.println(health);
         greenUnit = getGreenUnit();
@@ -89,6 +111,14 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
         map.setGreenSelectorPosition(greenUnit);
          
     }
+
+    private void setWindowLocation() {
+        int rankOnSelectionPanel = mainController.getSelectionButtonHierarchy(this);
+        unitWindow.setLocation(MainController.getMainController().getWidth()+10, rankOnSelectionPanel*100);
+        //System.out.println(rankOnSelectionPanel);
+    }
+
+
 
     public GreenUnit getGreenUnit(){
         if(greenUnit == null){
@@ -163,6 +193,12 @@ public class SelectionButton extends BackgroundPanel implements MouseInputListen
     }
     public void closeUnitWindow() {
         unitWindow.dispose();
+    }
+
+
+
+    public SuperDefense getUnitWindow() {
+       return unitWindow;
     }
 }
 

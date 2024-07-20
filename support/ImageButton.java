@@ -86,4 +86,10 @@ public class ImageButton extends JButton {
         g2d.dispose();
         return transparentImage;
     }
+
+
+    public void ChangeIcon(ImageIcon newImage){
+        buttonIcon = newImage;
+        repaint();
+    }
 }

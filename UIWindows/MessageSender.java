@@ -35,6 +35,7 @@ public class MessageSender extends JFrame {
         ImageIcon img = new ImageIcon("./images/msg/msgBack.png ");
         BackgroundAdder.addBackground(this,img, img.getIconWidth(), img.getIconHeight());
         initComponents();
+        setLocation(MainController.getMainController().getWidth()/4,MainController.getMainController().getHeight()+5);
     }
 
     void initComponents(){
@@ -91,11 +92,12 @@ public class MessageSender extends JFrame {
         }
 
         // setting this message sender window header 
-        DefenseLabel header = new DefenseLabel("sending Message From : " + sender.getSenderName(), 16);
+        DefenseLabel header = new DefenseLabel("Message From : " + sender.getSenderName(), 16);
         getContentPane().add(header);
         header.setBounds(0, 0, getWidth(), 48);
         header.setHorizontalAlignment(SwingConstants.CENTER);
         messageTextArea.requestFocusInWindow();
+        setTitle( "Sending message from " + sender.getSenderName());
     }
 
 

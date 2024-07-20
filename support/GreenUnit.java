@@ -8,7 +8,7 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
 
-import UIWindows.UnitWindow;
+import UIWindows.SubmarineWindow;
 import enums.GreenUnitType;
 import enums.HeavyWeapon;
 import intefaces.MapMoveable;
@@ -20,7 +20,7 @@ public class GreenUnit extends MapUnit implements MapMoveable , ActionListener{
     }
 
     private GreenUnitType unitType;
-    private String unitName;private UnitWindow unitWindow;
+    private String unitName;private SuperDefense unitWindow;
     private Timer timer;
     private static Random random = new Random();
     private EnemyMapUnit nearestEnemy = null;
@@ -71,7 +71,7 @@ public class GreenUnit extends MapUnit implements MapMoveable , ActionListener{
     }
 
     private void setSpeed(){
-        if(unitType == GreenUnitType.Helicopter)changeSpeed(20); // default 45  
+        if(unitType == GreenUnitType.Helicopter)changeSpeed(45); // default 45  
         if(unitType == GreenUnitType.Tank)changeSpeed(70);
     }
    
@@ -89,15 +89,19 @@ public class GreenUnit extends MapUnit implements MapMoveable , ActionListener{
         EnemyMapUnit nearestEnemy = null;
         nearestEnemyDistance = Integer.MAX_VALUE;
         if(allEnemies.size() >0){
-            for (EnemyMapUnit enemyMapUnit : allEnemies) {
-               if(enemyMapUnit.isDeath() == false){
-                int consideringEnemyDistance = this.calculateDistance(enemyMapUnit.getPosition());
-                if(nearestEnemyDistance > consideringEnemyDistance){
-                    nearestEnemyDistance = consideringEnemyDistance;
-                    nearestEnemy = enemyMapUnit;
-                }
-               }
-              
+            try {
+                for (EnemyMapUnit enemyMapUnit : allEnemies) {
+                    if(enemyMapUnit.isDeath() == false){
+                     int consideringEnemyDistance = this.calculateDistance(enemyMapUnit.getPosition());
+                     if(nearestEnemyDistance > consideringEnemyDistance){
+                         nearestEnemyDistance = consideringEnemyDistance;
+                         nearestEnemy = enemyMapUnit;
+                     }
+                    }
+                   
+                 }
+            } catch (Exception e) {
+                System.out.println("concurrent modification happened");
             }
             this.nearestEnemy = nearestEnemy;
             return nearestEnemy;
@@ -105,7 +109,7 @@ public class GreenUnit extends MapUnit implements MapMoveable , ActionListener{
         return null;
     }
 
-    public void setUnitWindow(UnitWindow unitWindow){
+    public void setUnitWindow(SuperDefense unitWindow){
         this.unitWindow = unitWindow;
     }
 
@@ -117,7 +121,7 @@ public class GreenUnit extends MapUnit implements MapMoveable , ActionListener{
         return unitType;
     }
 
-    public UnitWindow getUnitWindow(){
+    public SuperDefense getUnitWindow(){
         return unitWindow;
     }
 
@@ -126,16 +130,22 @@ public class GreenUnit extends MapUnit implements MapMoveable , ActionListener{
     public void actionPerformed(ActionEvent e) {
         if(!inAttack && !followingEnemy){
             FindNearestEnemy();
+            
         }
 
             if(unitWindow != null) {
                 //System.out.println("window detected");
                 if(nearestEnemyDistance < ENEMY_DETECT_DISTANCE){
-                    unitWindow.updateNearestEnemyDetails(nearestEnemy, nearestEnemyDistance);
+                    unitWindow.updateWindowDetails(nearestEnemy, nearestEnemyDistance);
                 }
                 else if (unitWindow != null){
-                    unitWindow.updateNearestEnemyDetails(null, nearestEnemyDistance);
+                    unitWindow.updateWindowDetails(null, nearestEnemyDistance);
                     //System.out.println("nearest Enemy :" + nearestEnemy.getEnemyName() + " : " + nearestEnemyDistance);
+                }
+                unitWindow.updateUnitDetailText();
+
+                if(unitWindow instanceof SubmarineWindow){
+                    ((SubmarineWindow) unitWindow).updateOxygenLevel();
                 }
                 
             }else{
