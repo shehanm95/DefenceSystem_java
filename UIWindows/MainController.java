@@ -268,7 +268,6 @@ public class MainController extends JFrame implements MsgReceivable {
         enableSliders();
     }
     public void scanArea(){
-        System.out.println("area Scanned");
         middlePanel.repaint();
         enemySpawner = EnemyInstantiateObj.getEnemyInstantiate();
         enemySpawner.instantiate();
@@ -282,25 +281,25 @@ public class MainController extends JFrame implements MsgReceivable {
     }
     private void deployHeli(){
         if(!isCanAdd()) return;
-        System.out.println("deployHeli");
         SelectionButton heli = new SelectionButton(GreenUnitType.Helicopter , String.format(" %02d", ++heliNum));
         selectionButtonPanel.add(heli); 
-        selectionButtonPanel.revalidate();
-        selectionButtonPanel.repaint();
+        selectionRepaint();
     }
+    
     private void deployTank(){
         if(!isCanAdd()) return;
-        System.out.println("deployTank");
         SelectionButton tank = new SelectionButton(GreenUnitType.Tank , String.format(" %02d", ++tankNum));
         selectionButtonPanel.add(tank); 
-        selectionButtonPanel.revalidate();
-        selectionButtonPanel.repaint();
     }
+    
     private void deploySub(){
         if(!isCanAdd()) return;
-        System.out.println("deploySub");
         SelectionButton sub = new SelectionButton(GreenUnitType.Submarine , String.format(" %02d", ++tankNum));
         selectionButtonPanel.add(sub); 
+    }
+
+
+    private void selectionRepaint() {
         selectionButtonPanel.revalidate();
         selectionButtonPanel.repaint();
     }

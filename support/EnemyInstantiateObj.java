@@ -32,7 +32,6 @@ public class EnemyInstantiateObj implements Runnable {
     public void run() {
         
       if(scanning){
-        System.out.println("entered");
         try {
             Thread.sleep(10000);
             //MainController.getMainController().scanArea();
@@ -42,7 +41,6 @@ public class EnemyInstantiateObj implements Runnable {
             e.printStackTrace();
         }
         while (true) {
-                System.out.println("entered");
                 try {
                     EnemyMapUnit enemy = getNewEnemy();
                     map.addUnitsToMap(enemy);
